@@ -26,7 +26,7 @@ import {
   BodyCatalogItem,
   BodyCatalogName,
   BodyCatalogActions,
-  IconButton, // novo estilo
+  IconButton,
   RedText,
   GreenText,
 } from "./styles.js";
@@ -34,6 +34,7 @@ import {
 export default function ListaCategoriaAdmin() {
   const navigate = useNavigate();
   const [categorias, setCategorias] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     async function fetchCategorias() {
@@ -54,7 +55,7 @@ export default function ListaCategoriaAdmin() {
     if (!window.confirm(`Tem certeza que deseja ${ativo ? 'desativar' : 'ativar'} esta categoria?`)) return;
 
     try {
-      await alterarStatusCategoria(id); // Chama a função que altera o status no backend
+      await alterarStatusCategoria(id);
       setCategorias((prevCategorias) =>
         prevCategorias.map((categoria) =>
           categoria.id === id ? { ...categoria, ativo: !ativo } : categoria
@@ -79,6 +80,14 @@ export default function ListaCategoriaAdmin() {
   const handleNewCategory = () => {
     navigate("/categoria");
   };
+
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
+  const filteredCategorias = categorias.filter((categoria) =>
+    categoria.nome.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <Container>
@@ -138,12 +147,14 @@ export default function ListaCategoriaAdmin() {
             <BodyInput
               type="text"
               placeholder="Pesquisar por nome da categoria..."
+              value={searchTerm}  
+              onChange={handleSearchChange}  
             />
           </BodyCatalogHeader>
 
           <BodyCatalogList>
-            {categorias.length > 0 ? (
-              categorias.map((categoria, index) => (
+            {filteredCategorias.length > 0 ? (
+              filteredCategorias.map((categoria, index) => (
                 <BodyCatalogItem key={index} ativo={categoria.ativo ? "ativo" : "inativo"}>
                   <BodyCatalogName>{categoria.nome}</BodyCatalogName>
                   <BodyCatalogActions>
