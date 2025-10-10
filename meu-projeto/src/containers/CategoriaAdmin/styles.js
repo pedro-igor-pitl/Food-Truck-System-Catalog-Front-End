@@ -346,3 +346,85 @@ export const BodyDeleteButton = styled.button`
   }
 `;
 
+export const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5); /* Fundo semitransparente */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999; /* Garante que o modal fique acima de outros elementos */
+`;
+
+export const ModalContent = styled.div`
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 1rem;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+`;
+
+export const ModaldivPai = styled.div`
+  display: flex;
+  justify-content: space-around;
+`;
+
+export const ModalLabel = styled.label`
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 0.5rem;
+  text-align: center;
+`;
+
+export const ModalButton = styled.button`
+  padding: 0.75rem 1.25rem;
+  font-size: 1rem;
+  background: linear-gradient(135deg, #fb6900, #facc15);
+  color: #ffffff;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+
+  &:hover {
+    background: linear-gradient(135deg, #9b5d00, #b3a400);
+  }
+
+  & + & {
+    margin-left: 1rem; /* Espaço entre os botões */
+  }
+`;
+
+export const ModalInput = styled.input`
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid #d1d5db;
+  background: #fafafaff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  color: #111827;
+
+  &:focus {
+    outline: none;
+    border-color: #000000ff;
+  }
+`;
+
+export const ModalTitle = styled.h2`
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 1rem;
+`;
