@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaEdit, FaTrash } from "react-icons/fa"; // ✅ Import dos ícones
+import { FaEdit, FaSync } from "react-icons/fa"; // Alterei de lixeira para sincronização
+import { alterarStatusCategoria } from "../../services/alterarStatusCategoriaAdmin.js"; 
 import {
   Container,
   Header,
@@ -39,6 +40,7 @@ export default function ListaCategoriaAdmin() {
       try {
         const response = await fetch("http://localhost:8080/categoria/lista");
         const data = await response.json();
+        console.log("Categorias carregadas:", data);
         setCategorias(data);
       } catch (error) {
         console.error("Erro ao carregar categorias:", error);
@@ -46,6 +48,23 @@ export default function ListaCategoriaAdmin() {
     }
     fetchCategorias();
   }, []);
+
+  const handleAlterarStatusCategoria = async (id, ativo) => {
+    console.log("Tentando alterar status da categoria com ID:", id);
+    if (!window.confirm(`Tem certeza que deseja ${ativo ? 'desativar' : 'ativar'} esta categoria?`)) return;
+
+    try {
+      await alterarStatusCategoria(id); // Chama a função que altera o status no backend
+      setCategorias((prevCategorias) =>
+        prevCategorias.map((categoria) =>
+          categoria.id === id ? { ...categoria, ativo: !ativo } : categoria
+        )
+      );
+    } catch (error) {
+      console.error("Erro ao alterar categoria:", error);
+      alert("Erro ao alterar categoria");
+    }
+  };
 
   const HandleLogout = () => {
     localStorage.removeItem("adminToken");
@@ -125,14 +144,17 @@ export default function ListaCategoriaAdmin() {
           <BodyCatalogList>
             {categorias.length > 0 ? (
               categorias.map((categoria, index) => (
-                <BodyCatalogItem key={index}>
+                <BodyCatalogItem key={index} ativo={categoria.ativo ? "ativo" : "inativo"}>
                   <BodyCatalogName>{categoria.nome}</BodyCatalogName>
                   <BodyCatalogActions>
                     <IconButton title="Editar">
                       <FaEdit size={18} />
                     </IconButton>
-                    <IconButton title="Excluir" deletebtn="true">
-                      <FaTrash size={18} />
+                    <IconButton
+                      onClick={() => handleAlterarStatusCategoria(categoria.id, categoria.ativo)}
+                      title="Alterar Status"
+                    >
+                      <FaSync size={18} />
                     </IconButton>
                   </BodyCatalogActions>
                 </BodyCatalogItem>

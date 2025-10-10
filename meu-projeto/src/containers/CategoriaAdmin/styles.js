@@ -86,6 +86,8 @@ export const ButtonVoltar = styled.div`
     color: #000000ff;
     border-radius: 0.75rem;
     display: flex;
+    border: 2px solid #000000ff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     align-items: center;
     gap: 0.5rem;
     cursor: pointer;
@@ -287,23 +289,17 @@ export const BodyCatalogList = styled.div`
 
 // Item de categoria
 export const BodyCatalogItem = styled.div`
-  background: #ffffff;
+  background: ${(props) => (props.ativo === "ativo" ? "linear-gradient(135deg, #ffffffff, #ecf8f3ff, #04ffa3ff)" : "linear-gradient(135deg, #ffffffff, #f8ececff, #fe9b9bff)")};
   border-radius: 1rem;
   border: 1px solid #e5e7eb;
   padding: 1rem 1.25rem;
   display: flex;
   justify-content: space-between;
- 
-   background: white;
   cursor: pointer;
   transition: background 0.2s;
   gap: 0.5rem;
   align-items: center;
   box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-
-  &:hover {
-    background: #fbfbfbff;
-  }
 `;
 
 export const BodyCatalogName = styled.span`
@@ -349,3 +345,4 @@ export const BodyDeleteButton = styled.button`
     background: #dc2626;
   }
 `;
+

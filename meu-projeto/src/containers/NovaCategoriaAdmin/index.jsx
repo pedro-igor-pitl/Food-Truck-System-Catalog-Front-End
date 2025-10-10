@@ -51,7 +51,7 @@ export default function App() {
   };
 
   const VoltarDashBoard = () => {
-    navigate("/dashboard");
+    history.go(-1);
   };
 
   return (
