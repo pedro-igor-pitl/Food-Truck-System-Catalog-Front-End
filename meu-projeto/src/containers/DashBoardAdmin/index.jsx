@@ -56,6 +56,10 @@ export default function DashBoardAdmin() {
       .catch((err) => console.error("Erro ao carregar dados:", err));
   }, []);
 
+  const handleDashboardProduto = () => {
+    navigate("/dashboard/produto");
+  };
+  
   const handleDashBoardCatalogo = () => {
     navigate("/dashboard/categoria");
   };
@@ -101,7 +105,7 @@ export default function DashBoardAdmin() {
 
         <StatCard>
           <StatHeader>
-            <span>Clientes</span>
+            <span>Usuarios</span>
             <FaUsers />
           </StatHeader>
           <StatValue>{stats.totalClientes}</StatValue>
@@ -123,7 +127,7 @@ export default function DashBoardAdmin() {
           <ActionTitle>Gerenciar Produtos</ActionTitle>
           <ActionDesc>Adicione, edite e organize os produtos do seu cardápio</ActionDesc>
           <ActionButtons>
-            <ActionButtonPrimary>Ver Produtos</ActionButtonPrimary>
+            <ActionButtonPrimary onClick={handleDashboardProduto}>Ver Produtos</ActionButtonPrimary>
           </ActionButtons>
         </ActionCard>
 
@@ -136,10 +140,18 @@ export default function DashBoardAdmin() {
         </ActionCard>
 
         <ActionCard>
-          <ActionTitle>Relatórios</ActionTitle>
-          <ActionDesc>Visualize estatísticas e relatórios de vendas</ActionDesc>
+          <ActionTitle>Gerenciar Usuarios</ActionTitle>
+          <ActionDesc>Visualize os usuarios do seu negocio</ActionDesc>
           <ActionButtons>
-            <ActionButtonSecondary>Em Breve</ActionButtonSecondary>
+            <ActionButtonPrimary>Ver Usuarios</ActionButtonPrimary>
+          </ActionButtons>
+        </ActionCard>
+
+        <ActionCard>
+          <ActionTitle>Gerenciar Pedidos</ActionTitle>
+          <ActionDesc>Visualize os usuarios do seu negocio</ActionDesc>
+          <ActionButtons>
+            <ActionButtonPrimary>Ver Usuarios</ActionButtonPrimary>
           </ActionButtons>
         </ActionCard>
       </ActionsGrid>

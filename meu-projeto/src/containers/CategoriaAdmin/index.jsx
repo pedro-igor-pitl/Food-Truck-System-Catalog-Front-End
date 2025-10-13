@@ -157,7 +157,6 @@ const handleSaveCategoryName = async () => {
 
           <HeaderButtons>
             <Button>Ver Catálogo</Button>
-            <Button>Novo Produto</Button>
             <Button onClick={handleNewCategory}>Nova Categoria</Button>
           </HeaderButtons>
 
@@ -171,7 +170,7 @@ const handleSaveCategoryName = async () => {
           <StatsGrid>
             <StatCard>
               <StatHeader>
-                <span>Total de Categorias</span>
+                <span>Total de Produtos</span>
               </StatHeader>
               <StatusValue>{categorias.length}</StatusValue>
             </StatCard>

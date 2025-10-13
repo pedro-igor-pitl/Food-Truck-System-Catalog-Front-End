@@ -52,6 +52,7 @@ export const HeaderButtons = styled.div`
 export const Button = styled.button`
   padding: 0.75rem 1.25rem
   font-size: 0.95rem;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   background: linear-gradient(135deg, #fb6900ff, #facc15);
   color: #ffffffff;
   border-radius: 0.75rem;
@@ -84,11 +85,12 @@ export const StatsGrid = styled.div`
 export const StatCard = styled.div`
   background: #ffffff;
   border-radius: 1.25rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #ffffffff;
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 `;
 
 export const StatHeader = styled.div`
@@ -122,11 +124,12 @@ export const ActionsGrid = styled.div`
 export const ActionCard = styled.div`
   background: #ffffff;
   border-radius: 1.25rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #ffffffff;
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);  
 `;
 
 export const ActionTitle = styled.h2`
@@ -150,6 +153,7 @@ export const ActionButtonPrimary = styled.button`
   flex: 1;
   background: linear-gradient(135deg, #fb6900ff, #facc15);
   color: white;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   font-size: 0.85rem;
   padding: 0.6rem;
   border-radius: 0.75rem;
