@@ -92,10 +92,10 @@ export default function ListaProdutos() {
 
   const handleSaveProductName = async () => {
     try {
-      if (!newProductName.trim()) {
+            if (!newProductName.trim()) {
         alert("O nome do produto não pode estar vazio!");
         return;
-      }
+      } 
 
       const responseAtualizarProduto = await fetch(`http://localhost:8080/produto/atualizar/${produtoEdit.id}/${produtoEdit.categoria.id}`, {
         method: "PUT",
@@ -107,11 +107,14 @@ export default function ListaProdutos() {
           nome: newProductName
         })
       });
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
-      const responseAlterarStatusCategoria = async (id) => {
-        try {
-
-      if (responseAtualizarProduto.ok) {
+    const responseAlterarStatusCategoria = async (id) => {
+      try {
+        if (responseAtualizarProduto.ok) {
         const updatedProduto = await responseAtualizarProduto.json();
 
         setProdutos((prevProdutos) =>
