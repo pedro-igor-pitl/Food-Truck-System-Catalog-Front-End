@@ -368,6 +368,14 @@ export const ModalOverlay = styled.div`
   z-index: 9999; /* Garante que o modal fique acima de outros elementos */
 `;
 
+export const ModalLabelItens = styled.label`
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 0.5rem;
+  text-align: left;
+`;
+
 export const ModalContent = styled.div`
   background: #ffffff;
   padding: 2rem;
@@ -416,6 +424,13 @@ export const ModalButton = styled.button`
   }
 `;
 
+export const input = styled.input`
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid #d1d5db;
+  background: #fafafaff;
+  `;
 export const ModalInput = styled.input`
   padding: 0.75rem 1rem;
   font-size: 1rem;

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaEdit, FaSync } from "react-icons/fa";
+import { listaProdutos } from "../../services/ListaProduto.js";
 
 import {
   Container,
@@ -38,7 +39,9 @@ import {
   BoyCatalogPrice,
   BodyCatalogDescProduto,
   BodyCatalogCategoriaName,
+  ModalLabelItens,
 } from "./styles.js";
+import listaCategoriaAdmin from "../../services/ListaCategoriaAdmin.js";
 
 export default function ListaProdutos() {
   const navigate = useNavigate();
@@ -47,20 +50,35 @@ export default function ListaProdutos() {
   const [showModal, setShowModal] = useState(false);
   const [produtoEdit, setProdutoEdit] = useState(null);
   const [newProductName, setNewProductName] = useState("");
+  const [newProductDesc, setNewProductDesc] = useState("");
+  const [newProductPrice, setNewProductPrice] = useState(0);
+  const [categorias, setCategorias] = useState([]);
+  const [selectedCategoriaId, setSelectedCategoriaId] = useState(""); 
+
 
   useEffect(() => {
-    async function fetchProdutos() {
+    async function fetchCategorias() {
       try {
-        const responseListaProduto = await fetch("http://localhost:8080/produto/lista");
-        const data = await responseListaProduto.json();
-        console.log("Produtos carregados:", data);
-        setProdutos(data);
+        const data = await listaCategoriaAdmin();  // aqui recebe o array de categorias
+        setCategorias(data);
       } catch (error) {
-        console.error("Erro ao carregar produtos:", error);
+        console.error("Erro ao buscar categorias:", error);
       }
     }
+
+    async function fetchProdutos() {
+      try {
+        const data = await listaProdutos();
+        setProdutos(data);
+      } catch (error) {
+        console.error("Erro ao buscar produtos:", error);
+      }
+    }
+
+    fetchCategorias();
     fetchProdutos();
   }, []);
+
 
   const HandleLogout = () => {
     localStorage.removeItem("adminToken");
@@ -87,35 +105,52 @@ export default function ListaProdutos() {
   const handleEditProduto = (produto) => {
     setProdutoEdit(produto);
     setNewProductName(produto.nome);
-    setShowModal(true);
+    setNewProductDesc(produto.descricao);
+    setNewProductPrice(produto.preco);
+    setShowModal(true); 
+    setSelectedCategoriaId(produto.categoria?.id || "");
+
+    const categoriaDoProduto = categorias.find(
+      (cat) => cat.id === produto.categoria?.id
+    );
+
+    const nomeCategoria = categoriaDoProduto?.nome || "Categoria Desconhecida";
   };
 
   const handleSaveProductName = async () => {
     try {
-            if (!newProductName.trim()) {
+      if (!newProductName.trim()) {
         alert("O nome do produto não pode estar vazio!");
         return;
-      } 
+      }
 
-      const responseAtualizarProduto = await fetch(`http://localhost:8080/produto/atualizar/${produtoEdit.id}/${produtoEdit.categoria.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          ...produtoEdit,
-          nome: newProductName
-        })
-      });
-    } catch (error) {
-      console.log(error)
-    }
-  }
+      const responseAtualizarProduto = await fetch(
+        `http://localhost:8080/produto/atualizar/${produtoEdit.id}/${selectedCategoriaId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ...produtoEdit,
+            nome: newProductName,
+            descricao: newProductDesc,
+            preco: parseFloat(newProductPrice), // garante que o preço seja número
+            categoria: { id: selectedCategoriaId }, // opcionalmente passa a categoria atualizada
+          }),
+        }
+      );
 
-    const responseAlterarStatusCategoria = async (id) => {
-      try {
-        if (responseAtualizarProduto.ok) {
+      if (responseAtualizarProduto.ok) {
         const updatedProduto = await responseAtualizarProduto.json();
+
+        const categoriaCompleta = categorias.find(cat => cat.id === selectedCategoriaId);
+
+
+        updatedProduto.categoria = {
+          id: selectedCategoriaId,
+          nome: categoriaCompleta?.nome || "Categoria Desconhecida",
+        };
 
         setProdutos((prevProdutos) =>
           prevProdutos.map((produto) =>
@@ -130,6 +165,58 @@ export default function ListaProdutos() {
     } catch (error) {
       console.error("Erro ao atualizar produto:", error);
       alert("Erro ao salvar nome do produto.");
+    }
+  };
+
+  const responseAlterarStatusCategoria = async (id) => {
+    try {
+      // Aqui faltava uma chamada fetch para alterar status, preciso saber sua lógica exata.
+      // Vou colocar um exemplo básico para alterar o status (ativo/inativo):
+
+      const produtoParaAlterar = produtos.find((p) => p.id === id);
+      if (!produtoParaAlterar) return;
+
+      const response = await fetch(
+        `http://localhost:8080/produto/alterarStatus/${id}`,
+        {
+          method: "PATCH", // ou PUT dependendo do backend
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ativo: !produtoParaAlterar.ativo,
+          }),
+        }
+      );
+
+      if (response.ok) {
+        const updatedBackendProduto = await responseAtualizarProduto.json();
+        const categoriaCompleta = categorias.find(
+          (cat) => cat.id === selectedCategoriaId
+        );
+
+        // Montar produto atualizado com nome da categoria
+        const produtoAtualizado = {
+          ...updatedBackendProduto,
+          categoria: {
+            id: selectedCategoriaId,
+            nome: categoriaCompleta?.nome || "Categoria Desconhecida",
+          },
+        };
+
+        setProdutos((prevProdutos) =>
+          prevProdutos.map((produto) =>
+            produto.id === produtoAtualizado.id ? produtoAtualizado : produto
+          )
+        );
+
+        setShowModal(false);
+      } else {
+        alert("Erro ao alterar status do produto.");
+      }
+    } catch (error) {
+      console.error("Erro ao alterar status:", error);
+      alert("Erro ao alterar status do produto.");
     }
   };
 
@@ -198,19 +285,30 @@ export default function ListaProdutos() {
           <BodyCatalogList>
             {filteredProdutos.length > 0 ? (
               filteredProdutos.map((produto, index) => (
-                <BodyCatalogItem key={index} ativo={produto.ativo ? "ativo" : "inativo"}>
+                <BodyCatalogItem
+                  key={index}
+                  ativo={produto.ativo ? "ativo" : "inativo"}
+                >
                   <BodyCatalogName>{produto.nome}</BodyCatalogName>
                   <BodyCatalogDescProduto>{produto.descricao}</BodyCatalogDescProduto>
                   <DivPaiPriceName>
-                  <BoyCatalogPrice>R$ {produto.preco.toFixed(2)}</BoyCatalogPrice>
-                  <BodyCatalogCategoriaName>{produto.categoria.nome}</BodyCatalogCategoriaName>
+                    <BoyCatalogPrice>R$ {produto.preco.toFixed(2)}</BoyCatalogPrice>
+                    <BodyCatalogCategoriaName>
+                      {
+                        categorias.find((cat) => cat.id === produto.categoria?.id)?.nome || "Categoria Desconhecida"
+                      }
+                    </BodyCatalogCategoriaName>
+
                   </DivPaiPriceName>
                   <BodyCatalogActions>
-                    <IconButton title="Editar" onClick={() => handleEditProduto(produto)}>
+                    <IconButton
+                      title="Editar"
+                      onClick={() => handleEditProduto(produto)}
+                    >
                       <FaEdit size={18} />
                     </IconButton>
                     <IconButton
-                      onClick={() => alert("Implementar alteração de status")}
+                      onClick={() => responseAlterarStatusCategoria(produto.id)}
                       title="Alterar Status"
                     >
                       <FaSync size={18} />
@@ -228,12 +326,39 @@ export default function ListaProdutos() {
       {showModal && (
         <ModalOverlay>
           <ModalContent>
-            <ModalLabel htmlFor="produto">Novo Nome do Produto:</ModalLabel>
+            <ModalLabel htmlFor="produto">Alteração de Produto:</ModalLabel>
+            <ModalLabelItens>Nome:</ModalLabelItens>
             <input
               type="text"
               value={newProductName}
               onChange={(e) => setNewProductName(e.target.value)}
             />
+            <ModalLabelItens>Descrição:</ModalLabelItens>
+            <input
+              type="text"
+              value={newProductDesc}
+              onChange={(e) => setNewProductDesc(e.target.value)}
+            />
+            <ModalLabelItens>Preço:</ModalLabelItens>
+            <input
+              type="text"
+              value={newProductPrice}
+              onChange={(e) => setNewProductPrice(e.target.value)}
+            />
+            <ModalLabelItens>Categoria:</ModalLabelItens>
+            <select
+              value={selectedCategoriaId}
+              onChange={(e) => setSelectedCategoriaId(Number(e.target.value))}  // converte para número
+            >
+              <option value="" disabled>
+                Selecione uma categoria
+              </option>
+              {categorias.map((categoria) => (
+                <option key={categoria.id} value={categoria.id}>
+                  {categoria.nome}
+                </option>
+              ))}
+            </select>
             <ModaldivPais>
               <ModalButton onClick={handleSaveProductName}>Salvar</ModalButton>
               <ModalButton onClick={() => setShowModal(false)}>Cancelar</ModalButton>

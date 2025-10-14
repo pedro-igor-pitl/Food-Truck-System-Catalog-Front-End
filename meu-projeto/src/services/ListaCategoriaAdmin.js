@@ -1,17 +1,13 @@
-export default function listaCategoriaAdmin() {
-  const navigate = useNavigate();
-  const [categorias, setCategorias] = useState([]);
-
-  useEffect(() => {
-    async function fetchCategorias() {
-      try {
-        const response = await fetch("http://localhost:8080/categoria/lista");
-        const data = await response.json();
-        setCategorias(data);
-      } catch (error) {
-        console.error("Erro ao carregar categorias:", error);
-      }
+export default async function listaCategoriaAdmin() {
+  try {
+    const response = await fetch("http://localhost:8080/categoria/lista");
+    if (!response.ok) {
+      throw new Error("Erro ao buscar categorias");
     }
-    fetchCategorias();
-  }, []);
+    const data = await response.json();
+    return data;  // retorna o array de categorias
+  } catch (error) {
+    console.error("Erro ao carregar categorias:", error);
+    return []; // retorna array vazio em caso de erro
+  }
 }
