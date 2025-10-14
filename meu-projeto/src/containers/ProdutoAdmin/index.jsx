@@ -42,6 +42,7 @@ import {
   ModalLabelItens,
 } from "./styles.js";
 import listaCategoriaAdmin from "../../services/ListaCategoriaAdmin.js";
+import { alterarStatusProdutoAdmin } from "../../services/alterarStatusProdutoAdmin.js";
 
 export default function ListaProdutos() {
   const navigate = useNavigate();
@@ -135,8 +136,8 @@ export default function ListaProdutos() {
             ...produtoEdit,
             nome: newProductName,
             descricao: newProductDesc,
-            preco: parseFloat(newProductPrice), // garante que o preço seja número
-            categoria: { id: selectedCategoriaId }, // opcionalmente passa a categoria atualizada
+            preco: parseFloat(newProductPrice), 
+            categoria: { id: selectedCategoriaId },
           }),
         }
       );
@@ -168,57 +169,31 @@ export default function ListaProdutos() {
     }
   };
 
-  const responseAlterarStatusCategoria = async (id) => {
-    try {
-      // Aqui faltava uma chamada fetch para alterar status, preciso saber sua lógica exata.
-      // Vou colocar um exemplo básico para alterar o status (ativo/inativo):
+      const handleAlterarStatusProduto = async (id, ativo) => {
+        console.log("Tentando alterar status do produto com ID:", id);
+        
+        if (!window.confirm(`Tem certeza que deseja ${ativo ? 'desativar' : 'ativar'} este produto?`)) return;
 
-      const produtoParaAlterar = produtos.find((p) => p.id === id);
-      if (!produtoParaAlterar) return;
+        try {
+          const response = await alterarStatusProdutoAdmin (id);
 
-      const response = await fetch(
-        `http://localhost:8080/produto/alterarStatus/${id}`,
-        {
-          method: "PATCH", // ou PUT dependendo do backend
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            ativo: !produtoParaAlterar.ativo,
-          }),
+          if (response.status === 204) {
+            console.log("Produto alterada com sucesso.");
+            
+            setProdutos((prevProdutos) =>
+              prevProdutos.map((produto) =>
+                produto.id === id ? { ...produto, ativo: !ativo } : produto
+              )
+            );
+          } else {
+            console.error('Erro inesperado ao alterar categoria:', response);
+            alert("Erro inesperado ao alterar categoria.");
+          }
+        } catch (error) {
+          console.error("Erro ao alterar categoria:", error);
+          alert(`Erro ao alterar categoria: ${error.message}`);
         }
-      );
-
-      if (response.ok) {
-        const updatedBackendProduto = await responseAtualizarProduto.json();
-        const categoriaCompleta = categorias.find(
-          (cat) => cat.id === selectedCategoriaId
-        );
-
-        // Montar produto atualizado com nome da categoria
-        const produtoAtualizado = {
-          ...updatedBackendProduto,
-          categoria: {
-            id: selectedCategoriaId,
-            nome: categoriaCompleta?.nome || "Categoria Desconhecida",
-          },
-        };
-
-        setProdutos((prevProdutos) =>
-          prevProdutos.map((produto) =>
-            produto.id === produtoAtualizado.id ? produtoAtualizado : produto
-          )
-        );
-
-        setShowModal(false);
-      } else {
-        alert("Erro ao alterar status do produto.");
-      }
-    } catch (error) {
-      console.error("Erro ao alterar status:", error);
-      alert("Erro ao alterar status do produto.");
-    }
-  };
+      };
 
   return (
     <Container>
@@ -308,7 +283,7 @@ export default function ListaProdutos() {
                       <FaEdit size={18} />
                     </IconButton>
                     <IconButton
-                      onClick={() => responseAlterarStatusCategoria(produto.id)}
+                      onClick={() => handleAlterarStatusProduto(produto.id, produto.ativo)}
                       title="Alterar Status"
                     >
                       <FaSync size={18} />
@@ -348,7 +323,7 @@ export default function ListaProdutos() {
             <ModalLabelItens>Categoria:</ModalLabelItens>
             <select
               value={selectedCategoriaId}
-              onChange={(e) => setSelectedCategoriaId(Number(e.target.value))}  // converte para número
+              onChange={(e) => setSelectedCategoriaId(Number(e.target.value))} 
             >
               <option value="" disabled>
                 Selecione uma categoria

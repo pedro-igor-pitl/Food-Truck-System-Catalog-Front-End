@@ -292,7 +292,7 @@ export const BodyCatalogCategoriaName = styled.span`
   font-size: 0.9rem;
   font-weight: 500;
   color: #ffffffff;
-  border: 1px solid #10b981;
+  border: 1px solid #000000ff;
   background: #000000ff;
   padding: 0.25rem 0.5rem;
   border-radius: 0.5rem;
@@ -305,7 +305,6 @@ export const BodyCatalogItem = styled.div`
   padding: 1rem 1.25rem;
   display: block;
   justify-content: space-between;
-  cursor: pointer;
   transition: background 0.2s;
   gap: 0.5rem;
   align-items: center;

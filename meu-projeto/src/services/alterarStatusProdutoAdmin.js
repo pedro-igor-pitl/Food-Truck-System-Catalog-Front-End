@@ -1,6 +1,6 @@
 export async function alterarStatusProdutoAdmin(id) {
   try {
-    const response = await fetch(`http://localhost:8080/categoria/alternar-status/${id}`, {
+    const response = await fetch(`http://localhost:8080/produto/alternar-status/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
     });
