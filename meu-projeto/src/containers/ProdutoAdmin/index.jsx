@@ -91,10 +91,6 @@ export default function ListaProdutos() {
     navigate("/dashboard");
   };
 
-  const handleNewProduct = () => {
-    navigate("/dashboard/produto");
-  };
-
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
   };
@@ -194,6 +190,10 @@ export default function ListaProdutos() {
           alert(`Erro ao alterar categoria: ${error.message}`);
         }
       };
+      
+  const handleNavigateToNewProduct = () => {
+    navigate("/dashboard/produto/novo");
+  };
 
   return (
     <Container>
@@ -204,7 +204,7 @@ export default function ListaProdutos() {
 
           <HeaderButtons>
             <Button>Ver Catálogo</Button>
-            <Button onClick={handleNewProduct}>Novo Produto</Button>
+            <Button onClick={handleNavigateToNewProduct}>Novo Produto</Button>
           </HeaderButtons>
 
           <UserSection>
