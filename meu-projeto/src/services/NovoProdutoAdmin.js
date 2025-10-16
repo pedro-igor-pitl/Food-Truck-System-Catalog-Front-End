@@ -1,20 +1,12 @@
-export async function createProduto(produtoData) {
-    try {
-        const response = await fetch(`http://localhost:8080/produto/cadastrar/${produtoData.categoriaId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(produtoData),
-        });
+import axios from 'axios';
 
-        if (!response.ok) {
-            throw new Error('Erro ao criar produto');
-        }
+const API_URL = 'http://localhost:8080';
 
-        return await response.json();
-    } catch (error) {
-        console.error('Erro na requisição:', error);
-        throw error;
-    }
-}
+export const cadastrarProduto = async (produto, categoriaId) => {
+  try {
+    const response = await axios.post(`${API_URL}/produto/cadastrar/${categoriaId}`, produto);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";  // Não está sendo usado, mas pode ser útil
 import { 
-    Body,
+    BodyContainer,
     Main, 
     BodyCards, 
     BodyCardProduto, 
@@ -30,21 +30,24 @@ import {
     ImagePreview,
     ButtonSubmitProduto,
     HeaderTitleDescPai,
-    Header as StyledHeader,  // Renomeando a importação para evitar conflito
-    Button as StyledButton,  // Renomeando Button, caso haja duplicação
+    Header as StyledHeader, 
+    Button as StyledButton,
 } from "../NovoProdutoAdmin/styles.js";
 
 import ImagemUpload from '../../assets/ImgUploadFile.png';
+import { cadastrarProduto } from '../../services/NovoProdutoAdmin.js';
+import listaCategoriaAdmin from '../../services/ListaCategoriaAdmin.js';
+
 export default function NovoProdutoAdmin() {
+    const [nomeProduto, setNomeProduto] = useState('');
+    const [descricaoProduto, setDescricaoProduto] = useState('');
+    const [precoProduto, setPrecoProduto] = useState('');
+    const [ativoProduto, setAtivoProduto] = useState(true); 
     const [image, setImage] = useState(ImagemUpload);
     const [selectedCategoriaId, setSelectedCategoriaId] = useState('');
-    const [categorias, setCategorias]  = useState([
-        { id: 1, nome: 'Lanches' },
-        { id: 2, nome: 'Bebidas' },
-        { id: 3, nome: 'Sobremesas' },
-    ]);
+    const [categorias, setCategorias]  = useState([]);
 
-    // Função para lidar com a seleção de uma nova imagem
+    
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -59,38 +62,86 @@ export default function NovoProdutoAdmin() {
         }
     };
 
+    const handleCategoriaChange = (e) => {
+        setSelectedCategoriaId(e.target.value);
+    };
+
     // Função para voltar ao dashboard
     const VoltarDashBoard = () => {
         window.history.back();  // Usando 'window.history.back()' para voltar
     };
 
+    useEffect(() => {
+        const fetchCategorias = async () => {
+        try {
+            const data = await listaCategoriaAdmin(); 
+            setCategorias(data);
+        } catch (error) {
+            console.error("Erro ao carregar categorias", error);
+        }
+        };
+
+        fetchCategorias();
+    }, []); 
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+    const produto = {
+        nome: nomeProduto,
+        descricao: descricaoProduto,
+        preco: parseFloat(precoProduto),
+        imagemUrl: image,
+        ativo: ativoProduto,
+        categoria: {
+            id: selectedCategoriaId,
+        },
+        idCategoria: selectedCategoriaId,
+    };
+
+    try {
+        await cadastrarProduto(produto, selectedCategoriaId);
+        alert("Produto cadastrado com sucesso!");
+        setNomeProduto('');
+        setDescricaoProduto('');
+        setPrecoProduto('');
+        setImage(ImagemUpload);
+        setSelectedCategoriaId('');
+    } catch (error) {
+        console.error("Erro ao cadastrar produto:", error);
+        alert("Erro ao cadastrar produto. Tente novamente.");
+    }
+    };
+
+
     return (
-        <Body>
-            <Main>
-            <StyledHeader>  {/* Usando StyledHeader para evitar conflito */}
-                <StyledButton onClick={VoltarDashBoard}>Voltar</StyledButton>  {/* Usando StyledButton */}
+    <BodyContainer>
+        <Main>
+            <StyledHeader>  
+                <StyledButton onClick={VoltarDashBoard}>Voltar</StyledButton>  
                 <HeaderTitleDescPai>
                 <HeaderTitle>Novo Produto</HeaderTitle>
                 <HeaderDesc>Adicione um novo item ao seu cartápio</HeaderDesc>
                 </HeaderTitleDescPai>
             </StyledHeader>
             
-            <BodyCards>
+            <BodyCards >
                 <BodyCardProduto>
                     <CardTitle>Informações do Produto</CardTitle>
                     <CardDesc>Preencha os dados do novo produto</CardDesc>
-                    <Form>
+                    <Form onSubmit={handleSubmit}>
                         <LabelNomeProduto>Nome do Produto <CampoObrigatorio>*</CampoObrigatorio></LabelNomeProduto>
-                        <InputNomeProduto type="text" placeholder="Ex: X-Burger" />
+                        <InputNomeProduto type="text" placeholder="Ex: X-Burger" required value={nomeProduto} onChange={(e) => setNomeProduto(e.target.value)}/>
 
                         <LabelDescricao>Descrição</LabelDescricao>
-                        <InputDescricao type="text" placeholder="Ex: Pão, carne, queijo, alface e tomate" />
+                        <InputDescricao type="text" placeholder="Ex: Pão, carne, queijo, alface e tomate" value={descricaoProduto} onChange={(e) => setDescricaoProduto(e.target.value)}/>
 
                         <LabelPreco>Preço <CampoObrigatorio>*</CampoObrigatorio></LabelPreco>
-                        <InputPreco type="number" placeholder="0.00" />
+                        <InputPreco type="number" placeholder="0.00" required value={precoProduto} onChange={(e) => setPrecoProduto(e.target.value)}/>
 
                         <LabelCategoria>Categoria <CampoObrigatorio>*</CampoObrigatorio></LabelCategoria>
-                        <select
+                        <select 
+                            required
                             value={selectedCategoriaId}
                             onChange={(e) => setSelectedCategoriaId(Number(e.target.value))} 
                         >
@@ -101,7 +152,8 @@ export default function NovoProdutoAdmin() {
                                 <option key={categoria.id} value={categoria.id}>
                                     {categoria.nome}
                                 </option>
-                            ))}*/
+                            ))}
+                            
                         </select>
 
                         <DivImageUpload>
@@ -113,6 +165,7 @@ export default function NovoProdutoAdmin() {
                             />
                             
                             <input 
+                            
                                 type="file" 
                                 id="fileInput" 
                                 style={{ display: 'none' }} 
@@ -138,6 +191,6 @@ export default function NovoProdutoAdmin() {
                 </BodyCardPreview>
             </BodyCards>
         </Main>
-    </Body>
+    </BodyContainer>
     );
 };
