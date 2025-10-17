@@ -48,7 +48,6 @@ export default function ListaProdutos() {
   const navigate = useNavigate();
   const [produtos, setProdutos] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [showModal, setShowModal] = useState(false);
   const [produtoEdit, setProdutoEdit] = useState(null);
   const [newProductName, setNewProductName] = useState("");
   const [newProductDesc, setNewProductDesc] = useState("");
@@ -99,72 +98,6 @@ export default function ListaProdutos() {
     produto.nome.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleEditProduto = (produto) => {
-    setProdutoEdit(produto);
-    setNewProductName(produto.nome);
-    setNewProductDesc(produto.descricao);
-    setNewProductPrice(produto.preco);
-    setShowModal(true); 
-    setSelectedCategoriaId(produto.categoria?.id || "");
-
-    const categoriaDoProduto = categorias.find(
-      (cat) => cat.id === produto.categoria?.id
-    );
-
-    const nomeCategoria = categoriaDoProduto?.nome || "Categoria Desconhecida";
-  };
-
-  const handleSaveProductName = async () => {
-    try {
-      if (!newProductName.trim()) {
-        alert("O nome do produto não pode estar vazio!");
-        return;
-      }
-
-      const responseAtualizarProduto = await fetch(
-        `http://localhost:8080/produto/atualizar/${produtoEdit.id}/${selectedCategoriaId}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            ...produtoEdit,
-            nome: newProductName,
-            descricao: newProductDesc,
-            preco: parseFloat(newProductPrice), 
-            categoria: { id: selectedCategoriaId },
-          }),
-        }
-      );
-
-      if (responseAtualizarProduto.ok) {
-        const updatedProduto = await responseAtualizarProduto.json();
-
-        const categoriaCompleta = categorias.find(cat => cat.id === selectedCategoriaId);
-
-
-        updatedProduto.categoria = {
-          id: selectedCategoriaId,
-          nome: categoriaCompleta?.nome || "Categoria Desconhecida",
-        };
-
-        setProdutos((prevProdutos) =>
-          prevProdutos.map((produto) =>
-            produto.id === updatedProduto.id ? updatedProduto : produto
-          )
-        );
-
-        setShowModal(false);
-      } else {
-        alert("Erro ao atualizar produto.");
-      }
-    } catch (error) {
-      console.error("Erro ao atualizar produto:", error);
-      alert("Erro ao salvar nome do produto.");
-    }
-  };
-
       const handleAlterarStatusProduto = async (id, ativo) => {
         console.log("Tentando alterar status do produto com ID:", id);
         
@@ -190,7 +123,11 @@ export default function ListaProdutos() {
           alert(`Erro ao alterar categoria: ${error.message}`);
         }
       };
-      
+  
+  const handleAlterarProduto = (id) => {
+    navigate(`/dashboard/produto/alterar/${id}`);
+  };
+
   const handleNavigateToNewProduct = () => {
     navigate("/dashboard/produto/novo");
   };
@@ -278,7 +215,7 @@ export default function ListaProdutos() {
                   <BodyCatalogActions>
                     <IconButton
                       title="Editar"
-                      onClick={() => handleEditProduto(produto)}
+                      onClick={() => handleAlterarProduto(produto.id)}
                     >
                       <FaEdit size={18} />
                     </IconButton>
@@ -297,50 +234,6 @@ export default function ListaProdutos() {
           </BodyCatalogList>
         </Body>
       </Header>
-
-      {showModal && (
-        <ModalOverlay>
-          <ModalContent>
-            <ModalLabel htmlFor="produto">Alteração de Produto:</ModalLabel>
-            <ModalLabelItens>Nome:</ModalLabelItens>
-            <input
-              type="text"
-              value={newProductName}
-              onChange={(e) => setNewProductName(e.target.value)}
-            />
-            <ModalLabelItens>Descrição:</ModalLabelItens>
-            <input
-              type="text"
-              value={newProductDesc}
-              onChange={(e) => setNewProductDesc(e.target.value)}
-            />
-            <ModalLabelItens>Preço:</ModalLabelItens>
-            <input
-              type="text"
-              value={newProductPrice}
-              onChange={(e) => setNewProductPrice(e.target.value)}
-            />
-            <ModalLabelItens>Categoria:</ModalLabelItens>
-            <select
-              value={selectedCategoriaId}
-              onChange={(e) => setSelectedCategoriaId(Number(e.target.value))} 
-            >
-              <option value="" disabled>
-                Selecione uma categoria
-              </option>
-              {categorias.map((categoria) => (
-                <option key={categoria.id} value={categoria.id}>
-                  {categoria.nome}
-                </option>
-              ))}
-            </select>
-            <ModaldivPais>
-              <ModalButton onClick={handleSaveProductName}>Salvar</ModalButton>
-              <ModalButton onClick={() => setShowModal(false)}>Cancelar</ModalButton>
-            </ModaldivPais>
-          </ModalContent>
-        </ModalOverlay>
-      )}
     </Container>
   );
 }

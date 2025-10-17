@@ -1,18 +1,14 @@
+import axios from 'axios';
+
 export async function listaProdutos() {
     try {
-        const response = await fetch("http://localhost:8080/produto/lista", {
-            method: "GET",
+        const response = await axios.get("http://localhost:8080/produto/lista", {
             headers: {
                 "Content-Type": "application/json",
             }
         });
-        if (!response.ok) {
-            throw new Error("Erro ao buscar produtos");
-        }
-        const data = await response.json();
-        return data;
-    }
-    catch (error) {
+        return response.data;
+    } catch (error) {
         console.error("Erro na requisição:", error);
         throw error;
     }

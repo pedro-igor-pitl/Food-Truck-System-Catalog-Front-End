@@ -5,6 +5,7 @@ import NovaCategoria from "./containers/NovaCategoriaAdmin";
 import DashBoardCategoria from "./containers/CategoriaAdmin";
 import ProdutoAdmin from "./containers/ProdutoAdmin";
 import NovoProduto from "./containers/NovoProdutoAdmin";
+import AlterarProdutoAdmin from "./containers/AlterarProdutoAdmin";
 
 export default function App() {
   return (
@@ -15,6 +16,7 @@ export default function App() {
         <Route path="/dashboard/categoria" element={<DashBoardCategoria />} />
         <Route path="/dashboard/produto" element={<ProdutoAdmin />}/>
         <Route path="/dashboard/produto/novo" element={<NovoProduto />} />
+        <Route path="/dashboard/produto/alterar/:idProduto" element={<AlterarProdutoAdmin />} />
       </Routes>
   );
 }
