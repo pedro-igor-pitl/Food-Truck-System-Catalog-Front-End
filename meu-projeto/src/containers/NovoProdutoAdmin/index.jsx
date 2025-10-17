@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";  // Não está sendo usado, mas pode ser útil
+import { useNavigate } from "react-router-dom";
+
 import { 
     BodyContainer,
     Main, 
@@ -43,27 +44,18 @@ export default function NovoProdutoAdmin() {
     const [descricaoProduto, setDescricaoProduto] = useState('');
     const [precoProduto, setPrecoProduto] = useState('');
     const [ativoProduto, setAtivoProduto] = useState(true); 
-    const [image, setImage] = useState(ImagemUpload);
+    const [image, setImage] = useState(null);
     const [selectedCategoriaId, setSelectedCategoriaId] = useState('');
     const [categorias, setCategorias]  = useState([]);
+    const textPreviewNomeProduto = 'Nome do Produto';
+    const textPreviewDescricaoProduto = 'Descrição do produto';
+    const textPreviewPrecoProduto = '0.00';
 
-    
     const handleImageChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-
-            // Quando a imagem for carregada, atualiza o estado com a URL
-            reader.onloadend = () => {
-                setImage(reader.result);
-            }
-
-            reader.readAsDataURL(file);
-        }
-    };
-
-    const handleCategoriaChange = (e) => {
-        setSelectedCategoriaId(e.target.value);
+    const file = e.target.files[0];
+    if (file) {
+        setImage(file);
+    }
     };
 
     // Função para voltar ao dashboard
@@ -84,35 +76,31 @@ export default function NovoProdutoAdmin() {
         fetchCategorias();
     }, []); 
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
+    const handleSubmit = async (e) => {
+    e.preventDefault();
 
-    const produto = {
-        nome: nomeProduto,
-        descricao: descricaoProduto,
-        preco: parseFloat(precoProduto),
-        imagemUrl: image,
-        ativo: ativoProduto,
-        categoria: {
-            id: selectedCategoriaId,
-        },
-        idCategoria: selectedCategoriaId,
-    };
+    const formData = new FormData();
+    formData.append('nome', nomeProduto);
+    formData.append('descricao', descricaoProduto);
+    formData.append('preco', precoProduto);
+    formData.append('ativo', ativoProduto);
+    formData.append('categoriaId', selectedCategoriaId);
+    formData.append('imagem', image); // Envia o arquivo real (tipo File)
 
     try {
-        await cadastrarProduto(produto, selectedCategoriaId);
+        await cadastrarProduto(formData, selectedCategoriaId); // Adaptar o service para aceitar FormData
         alert("Produto cadastrado com sucesso!");
+        
         setNomeProduto('');
         setDescricaoProduto('');
         setPrecoProduto('');
-        setImage(ImagemUpload);
+        setImage(null);
         setSelectedCategoriaId('');
     } catch (error) {
         console.error("Erro ao cadastrar produto:", error);
         alert("Erro ao cadastrar produto. Tente novamente.");
     }
     };
-
 
     return (
     <BodyContainer>
@@ -158,11 +146,12 @@ const handleSubmit = async (e) => {
 
                         <DivImageUpload>
                             <ImagemTitle>Escolha uma imagem</ImagemTitle>
-                            <ImagePreview 
-                                src={image} 
-                                alt="Imagem de pré-visualização" 
-                                onClick={() => document.getElementById('fileInput').click()} 
-                            />
+
+                        <ImagePreview 
+                        src={image ? URL.createObjectURL(image) : ImagemUpload}
+                        alt="Preview da imagem"
+                        onClick={() => document.getElementById('fileInput').click()}
+                        />
                             
                             <input 
                             
@@ -181,11 +170,11 @@ const handleSubmit = async (e) => {
                     <CardTitle>Pré-visualização</CardTitle>
                     <CardDesc>Veja como seu produto ficará no cardápio</CardDesc>
 
-                    <Img src={image} alt="Preview do Produto" />
-                    <CardProductName>Nome do Produto</CardProductName>
-                    <CardProductDesc>Descrição do produto</CardProductDesc>
+                    <Img src={image ? URL.createObjectURL(image) : ImagemUpload} alt="Preview do Produto" />
+                    <CardProductName >{nomeProduto || textPreviewNomeProduto}</CardProductName>
+                    <CardProductDesc>{descricaoProduto || textPreviewDescricaoProduto}</CardProductDesc>
                     <DivPaiPriceBtnCarrinho>
-                        <CardProductPrice>R$ 0.00</CardProductPrice>
+                        <CardProductPrice>{precoProduto || textPreviewPrecoProduto}</CardProductPrice>
                         <ButtonAddCarrinho>Adicionar ao Carrinho</ButtonAddCarrinho>
                     </DivPaiPriceBtnCarrinho>                    
                 </BodyCardPreview>
