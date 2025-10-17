@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 
 import { 
     BodyContainer,
@@ -58,9 +57,16 @@ export default function NovoProdutoAdmin() {
     }
     };
 
-    // Função para voltar ao dashboard
+    const handlePrecoChange = (e) => {
+        const value = e.target.value;
+        const regex = /^\d*\.?\d{0,2}$/;
+
+        if (value === '' || regex.test(value)) {
+            setPrecoProduto(value);
+        }
+    }
     const VoltarDashBoard = () => {
-        window.history.back();  // Usando 'window.history.back()' para voltar
+        window.history.back();
     };
 
     useEffect(() => {
@@ -85,10 +91,10 @@ export default function NovoProdutoAdmin() {
     formData.append('preco', precoProduto);
     formData.append('ativo', ativoProduto);
     formData.append('categoriaId', selectedCategoriaId);
-    formData.append('imagem', image); // Envia o arquivo real (tipo File)
+    formData.append('imagem', image);
 
     try {
-        await cadastrarProduto(formData, selectedCategoriaId); // Adaptar o service para aceitar FormData
+        await cadastrarProduto(formData, selectedCategoriaId);
         alert("Produto cadastrado com sucesso!");
         
         setNomeProduto('');
@@ -125,7 +131,7 @@ export default function NovoProdutoAdmin() {
                         <InputDescricao type="text" placeholder="Ex: Pão, carne, queijo, alface e tomate" value={descricaoProduto} onChange={(e) => setDescricaoProduto(e.target.value)}/>
 
                         <LabelPreco>Preço <CampoObrigatorio>*</CampoObrigatorio></LabelPreco>
-                        <InputPreco type="number" placeholder="0.00" required value={precoProduto} onChange={(e) => setPrecoProduto(e.target.value)}/>
+                        <InputPreco type="number" placeholder="0.00" required value={precoProduto} onChange={handlePrecoChange}/>
 
                         <LabelCategoria>Categoria <CampoObrigatorio>*</CampoObrigatorio></LabelCategoria>
                         <select 
