@@ -299,7 +299,7 @@ export const BodyCatalogCategoriaName = styled.span`
 `;
 
 export const BodyCatalogItem = styled.div`
-  background: ${(props) => (props.ativo === "ativo" ? "linear-gradient(135deg, #ffffffff, #ecf8f3ff, #04ffa3ff)" : "linear-gradient(135deg, #ffffffff, #f8ececff, #fe9b9bff)")};
+  background: ${(props) => (props.ativo === "ativo" ? "linear-gradient(135deg, #ffffffff, #ffffffff, #d7fff1ff)" : "linear-gradient(135deg, #ffffffff, #ffffffff, #ffececff)")};
   border-radius: 1rem;
   border: 1px solid #e5e7eb;
   padding: 1rem 1.25rem;
@@ -309,6 +309,14 @@ export const BodyCatalogItem = styled.div`
   gap: 0.5rem;
   align-items: center;
   box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+`;
+
+export const BodyCatalogImg = styled.img`
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 0.75rem;
+  margin-bottom: 0.75rem;
 `;
 
 export const BodyCatalogName = styled.span`

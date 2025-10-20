@@ -34,6 +34,7 @@ import {
   ModalContent,
   ModalButton,
   ModalLabel,
+  BodyCatalogImg,
   ModaldivPais,
   DivPaiPriceName,
   BoyCatalogPrice,
@@ -61,6 +62,7 @@ export default function ListaProdutos() {
       try {
         const data = await listaCategoriaAdmin();  // aqui recebe o array de categorias
         setCategorias(data);
+        console.log("Categorias carregadas:", produtos);
       } catch (error) {
         console.error("Erro ao buscar categorias:", error);
       }
@@ -201,6 +203,7 @@ export default function ListaProdutos() {
                   key={index}
                   ativo={produto.ativo ? "ativo" : "inativo"}
                 >
+                  <BodyCatalogImg src={produto.imagemUrl} alt={produto.nome} />
                   <BodyCatalogName>{produto.nome}</BodyCatalogName>
                   <BodyCatalogDescProduto>{produto.descricao}</BodyCatalogDescProduto>
                   <DivPaiPriceName>

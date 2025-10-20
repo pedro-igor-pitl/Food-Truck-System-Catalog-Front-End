@@ -89,8 +89,6 @@ const BASE_URL_BACKEND = 'http://localhost:8080';
                         setPrecoProduto(produto.preco);
                         setAtivoProduto(produto.ativo);
                         setSelectedCategoriaId(produto.categoria.id);
-
-                        // Aqui você concatena a URL base para formar a URL completa da imagem
                         setImagemUrlBackend(produto.imagemUrl ? `${BASE_URL_BACKEND}${produto.imagemUrl}` : '');
                     } else {
                         console.error("Produto não encontrado");
@@ -105,8 +103,6 @@ const BASE_URL_BACKEND = 'http://localhost:8080';
         carregarProduto();
     }, [idProduto]);
 
-
-    // Carregar as categorias
     useEffect(() => {
         const fetchCategorias = async () => {
             try {
@@ -128,21 +124,19 @@ const BASE_URL_BACKEND = 'http://localhost:8080';
         formData.append('descricao', descricaoProduto);
         formData.append('preco', precoProduto);
         formData.append('ativo', ativoProduto);
-        formData.append('categoriaId', selectedCategoriaId); // Certifique-se de passar a categoria selecionada
+        formData.append('categoriaId', selectedCategoriaId);
         if (image) {
             formData.append('imagem', image);
         }
 
         try {
             if (idProduto) {
-                await alterarProdutoAdmin(idProduto, formData, selectedCategoriaId); // Passando selectedCategoriaId aqui
+                await alterarProdutoAdmin(idProduto, formData, selectedCategoriaId);
                 alert("Produto alterado com sucesso!");
             } else {
-                await cadastrarProduto(formData, selectedCategoriaId); // Para cadastro, também passa o selectedCategoriaId
+                await cadastrarProduto(formData, selectedCategoriaId);
                 alert("Produto cadastrado com sucesso!");
             }
-
-            // Limpar os campos após o envio
             setNomeProduto('');
             setDescricaoProduto('');
             setPrecoProduto('');
@@ -154,6 +148,9 @@ const BASE_URL_BACKEND = 'http://localhost:8080';
         }
     };
 
+    const imagemPreview = image
+    ? URL.createObjectURL(image)
+    : imagemUrlBackend || ImagemUpload;
 
     return (
         <BodyContainer>
@@ -194,13 +191,7 @@ const BASE_URL_BACKEND = 'http://localhost:8080';
                             <DivImageUpload>
                                 <ImagemTitle>Escolha uma imagem</ImagemTitle>
                             <ImagePreview 
-                                src={
-                                    image
-                                        ? URL.createObjectURL(image)  // Imagem carregada localmente
-                                        : imagemUrlBackend  // Imagem carregada do servidor
-                                        ? imagemUrlBackend  // Se houver URL da imagem, usamos ela
-                                        : ImagemUpload  // Caso contrário, usamos uma imagem padrão
-                                }
+                                src={imagemPreview}
                                 alt="Preview da imagem"
                                 onClick={() => document.getElementById('fileInput').click()}
                             />
@@ -219,7 +210,7 @@ const BASE_URL_BACKEND = 'http://localhost:8080';
                         <CardTitle>Pré-visualização</CardTitle>
                         <CardDesc>Veja como seu produto ficará no cardápio</CardDesc>
 
-                        <Img src={image ? URL.createObjectURL(image) : ImagemUpload} alt="Preview do Produto" />
+                        <Img src={imagemPreview} alt="Preview do Produto" />
                         <CardProductName>{nomeProduto || textPreviewNomeProduto}</CardProductName>
                         <CardProductDesc>{descricaoProduto || textPreviewDescricaoProduto}</CardProductDesc>
                         <DivPaiPriceBtnCarrinho>

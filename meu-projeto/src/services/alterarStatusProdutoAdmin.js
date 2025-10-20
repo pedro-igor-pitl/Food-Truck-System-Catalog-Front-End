@@ -4,7 +4,7 @@ export async function alterarStatusProdutoAdmin(id) {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
     });
-
+    
 
     if (response.status === 204) {
       return { status: 204 }; 
