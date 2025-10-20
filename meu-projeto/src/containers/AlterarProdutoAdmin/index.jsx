@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom'; // ✅ useNavigate adicionado
 import { alterarProdutoAdmin } from '../../services/alterarProdutoAdmin.js';
 
 import { 
@@ -34,7 +34,7 @@ import {
     HeaderTitleDescPai,
     Header as StyledHeader, 
     Button as StyledButton,
-} from "../NovoProdutoAdmin/styles.js";
+} from "../AlterarProdutoAdmin/styles.js";
 
 import ImagemUpload from '../../assets/ImgUploadFile.png';
 import { cadastrarProduto } from '../../services/NovoProdutoAdmin.js';
@@ -55,29 +55,25 @@ export default function NovoProdutoAdmin() {
     const { idProduto } = useParams();
     const [imagemUrlBackend, setImagemUrlBackend] = useState('');
 
+    const navigate = useNavigate(); // ✅ novo
+
+    const BASE_URL_BACKEND = 'http://localhost:8080';
+
     const handleImageChange = (e) => {
         const file = e.target.files[0];
-        if (file) {
-            setImage(file);
-        }
+        if (file) setImage(file);
     };
 
     const handlePrecoChange = (e) => {
         const value = e.target.value;
         const regex = /^\d*\.?\d{0,2}$/;
-
-        if (value === '' || regex.test(value)) {
-            setPrecoProduto(value);
-        }
+        if (value === '' || regex.test(value)) setPrecoProduto(value);
     };
 
-    const VoltarDashBoard = () => {
-        window.history.back();
+    const handleVoltarDashBoardProduto = () => {
+        navigate("/dashboard/produto"); // ✅ navegar sem refresh
     };
 
-const BASE_URL_BACKEND = 'http://localhost:8080';
-
-    
     useEffect(() => {
         const carregarProduto = async () => {
             if (idProduto) {
@@ -90,8 +86,6 @@ const BASE_URL_BACKEND = 'http://localhost:8080';
                         setAtivoProduto(produto.ativo);
                         setSelectedCategoriaId(produto.categoria.id);
                         setImagemUrlBackend(produto.imagemUrl ? `${BASE_URL_BACKEND}${produto.imagemUrl}` : '');
-                    } else {
-                        console.error("Produto não encontrado");
                     }
                 } catch (error) {
                     console.error("Erro ao carregar produto:", error);
@@ -99,7 +93,6 @@ const BASE_URL_BACKEND = 'http://localhost:8080';
                 }
             }
         };
-
         carregarProduto();
     }, [idProduto]);
 
@@ -112,9 +105,8 @@ const BASE_URL_BACKEND = 'http://localhost:8080';
                 console.error("Erro ao carregar categorias", error);
             }
         };
-
         fetchCategorias();
-    }, []); 
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -125,9 +117,7 @@ const BASE_URL_BACKEND = 'http://localhost:8080';
         formData.append('preco', precoProduto);
         formData.append('ativo', ativoProduto);
         formData.append('categoriaId', selectedCategoriaId);
-        if (image) {
-            formData.append('imagem', image);
-        }
+        if (image) formData.append('imagem', image);
 
         try {
             if (idProduto) {
@@ -137,26 +127,29 @@ const BASE_URL_BACKEND = 'http://localhost:8080';
                 await cadastrarProduto(formData, selectedCategoriaId);
                 alert("Produto cadastrado com sucesso!");
             }
+
+            // ✅ reset campos
             setNomeProduto('');
             setDescricaoProduto('');
             setPrecoProduto('');
             setImage(null);
             setSelectedCategoriaId('');
+
+            // ✅ volta para lista de produtos e indica atualização
+            navigate("/dashboard/produto", { state: { updated: true } });
         } catch (error) {
             console.error("Erro ao salvar produto:", error);
             alert("Erro ao salvar produto. Tente novamente.");
         }
     };
 
-    const imagemPreview = image
-    ? URL.createObjectURL(image)
-    : imagemUrlBackend || ImagemUpload;
+    const imagemPreview = image ? URL.createObjectURL(image) : imagemUrlBackend || ImagemUpload;
 
     return (
         <BodyContainer>
             <Main>
                 <StyledHeader>  
-                    <StyledButton onClick={VoltarDashBoard}>Voltar</StyledButton>  
+                    <StyledButton onClick={handleVoltarDashBoardProduto}>Voltar</StyledButton>  
                     <HeaderTitleDescPai>
                         <HeaderTitle>{idProduto ? "Alterar Produto" : "Cadastrar Produto"}</HeaderTitle>
                         <HeaderDesc>Altere um item do seu cartápio</HeaderDesc>
@@ -188,20 +181,13 @@ const BASE_URL_BACKEND = 'http://localhost:8080';
                                     <option key={categoria.id} value={categoria.id}>{categoria.nome}</option>
                                 ))}
                             </select>
+
                             <DivImageUpload>
                                 <ImagemTitle>Escolha uma imagem</ImagemTitle>
-                            <ImagePreview 
-                                src={imagemPreview}
-                                alt="Preview da imagem"
-                                onClick={() => document.getElementById('fileInput').click()}
-                            />
-                                <input
-                                    type="file"
-                                    id="fileInput"
-                                    style={{ display: 'none' }}
-                                    onChange={handleImageChange}
-                                />
+                                <ImagePreview src={imagemPreview} alt="Preview da imagem" onClick={() => document.getElementById('fileInput').click()} />
+                                <input type="file" id="fileInput" style={{ display: 'none' }} onChange={handleImageChange} />
                             </DivImageUpload>
+
                             <ButtonSubmitProduto type="submit">Salvar Produto</ButtonSubmitProduto>
                         </Form>
                     </BodyCardProduto>
@@ -214,7 +200,7 @@ const BASE_URL_BACKEND = 'http://localhost:8080';
                         <CardProductName>{nomeProduto || textPreviewNomeProduto}</CardProductName>
                         <CardProductDesc>{descricaoProduto || textPreviewDescricaoProduto}</CardProductDesc>
                         <DivPaiPriceBtnCarrinho>
-                            <CardProductPrice>{precoProduto || textPreviewPrecoProduto}</CardProductPrice>
+                            <CardProductPrice>R${precoProduto || textPreviewPrecoProduto}</CardProductPrice>
                             <ButtonAddCarrinho>Adicionar ao Carrinho</ButtonAddCarrinho>
                         </DivPaiPriceBtnCarrinho>                    
                     </BodyCardPreview>

@@ -281,7 +281,7 @@ export const CardProductDesc = styled.p`
 export const CardProductPrice = styled.p`
   font-size: 18px;
   font-weight: 700;
-  color: #fb6900;
+  color: #1cb33aff;
   margin-bottom: 20px;
 `;
 
