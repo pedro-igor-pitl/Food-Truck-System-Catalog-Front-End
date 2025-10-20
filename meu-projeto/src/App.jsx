@@ -6,7 +6,7 @@ import DashBoardCategoria from "./containers/CategoriaAdmin";
 import ProdutoAdmin from "./containers/ProdutoAdmin";
 import NovoProduto from "./containers/NovoProdutoAdmin";
 import AlterarProdutoAdmin from "./containers/AlterarProdutoAdmin";
-
+import DashBoardUsuario from "./containers/DashBoardUsuario";
 export default function App() {
   return (
       <Routes>
@@ -17,6 +17,7 @@ export default function App() {
         <Route path="/dashboard/produto" element={<ProdutoAdmin />}/>
         <Route path="/dashboard/produto/novo" element={<NovoProduto />} />
         <Route path="/dashboard/produto/alterar/:idProduto" element={<AlterarProdutoAdmin />} />
+        <Route path="/dashboard/usuario" element={<DashBoardUsuario />} />
       </Routes>
   );
 }

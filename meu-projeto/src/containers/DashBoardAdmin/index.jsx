@@ -63,6 +63,10 @@ export default function DashBoardAdmin() {
   const handleDashBoardCatalogo = () => {
     navigate("/dashboard/categoria");
   };
+
+  const handleDashBoardUsuario = () => {
+    navigate("/dashboard/usuario");
+  };
   
   const handleNovoProduto = () => {
     navigate("/dashboard/produto/novo");
@@ -147,7 +151,7 @@ export default function DashBoardAdmin() {
           <ActionTitle>Gerenciar Usuarios</ActionTitle>
           <ActionDesc>Visualize os usuarios do seu negocio</ActionDesc>
           <ActionButtons>
-            <ActionButtonPrimary>Ver Usuarios</ActionButtonPrimary>
+            <ActionButtonPrimary onClick={handleDashBoardUsuario}>Ver Usuarios</ActionButtonPrimary>
           </ActionButtons>
         </ActionCard>
 
