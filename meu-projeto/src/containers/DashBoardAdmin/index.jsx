@@ -72,6 +72,9 @@ export default function DashBoardAdmin() {
     navigate("/dashboard/produto/novo");
   };
 
+  const handleCatalog = () => {
+    navigate("/home");
+  }
   return (
     <Container>
       <Header>
@@ -81,7 +84,7 @@ export default function DashBoardAdmin() {
         </HeaderInfo>
 
         <HeaderButtons>
-          <Button>Ver Catálogo</Button>
+          <Button onClick={handleCatalog}>Ver Catálogo</Button>
           <Button onClick={handleNovoProduto}>Novo Produto</Button>
           <Button onClick={handleNewCategory}>Nova Categoria</Button>
         </HeaderButtons>
