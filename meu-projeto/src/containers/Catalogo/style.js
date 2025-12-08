@@ -143,23 +143,28 @@ export const FooterInfo = styled.div`
   }
 `;
 
-export const CartButton = styled.button`
-  position: absolute;
-  right: 20px;
-  top: 20px;
-  font-size: 26px;
-  background: #fff;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 50%;
-  cursor: pointer;
-  box-shadow: 0 0 8px rgba(0,0,0,0.15);
-  transition: 0.2s;
+export const CartButton = {
+  position: "fixed",
+  right: "20px",
+  top: "20px",
+  width: "50px",
+  height: "50px",
+  borderRadius: "50%",
+  border: "none",
+  background: "#f39c12",
+  cursor: "pointer",
+  boxShadow: "0 0 8px rgba(255, 255, 255, 1)",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  transition: "0.2s",
+};
 
-  &:hover {
-    transform: scale(1.1);
-  }
-`;
+export const CartIcon = {
+  width: "24px",
+  height: "24px",
+};
+
 export const ContactButton = styled(Button)`
   margin-top: 20px;
   padding: 10px 20px;
