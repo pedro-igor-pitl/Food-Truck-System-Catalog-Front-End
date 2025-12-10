@@ -148,6 +148,10 @@ const handleSaveCategoryName = async () => {
     }
 };
 
+  const handleCatalog = () => {
+    navigate("/");
+  }
+
   return (
     <Container>
       <Header>
@@ -156,7 +160,7 @@ const handleSaveCategoryName = async () => {
           <HeaderSub>Organize os produtos do seu cardápio</HeaderSub>
 
           <HeaderButtons>
-            <Button>Ver Catálogo</Button>
+            <Button onClick={handleCatalog}>Ver Catálogo</Button>
             <Button onClick={handleNewCategory}>Nova Categoria</Button>
           </HeaderButtons>
 

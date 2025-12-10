@@ -134,6 +134,10 @@ export default function ListaProdutos() {
     navigate("/dashboard/produto/novo");
   };
 
+  const handleCatalog = () => {
+    navigate("/");
+  }
+
   return (
     <Container>
       <Header>
@@ -142,7 +146,7 @@ export default function ListaProdutos() {
           <HeaderSub>Organize os produtos do seu cardápio</HeaderSub>
 
           <HeaderButtons>
-            <Button>Ver Catálogo</Button>
+            <Button onClick={handleCatalog}>Ver Catálogo</Button>
             <Button onClick={handleNavigateToNewProduct}>Novo Produto</Button>
           </HeaderButtons>
 

@@ -117,6 +117,10 @@ export default function ListaProdutos() {
     navigate("/dashboard/usuario/novo");
   };
 
+  const handleCatalog = () => {
+    navigate("/");
+  }
+
   return (
     <Container>
       <Header>
@@ -125,7 +129,7 @@ export default function ListaProdutos() {
           <HeaderSub>Organize os usuarios do seu cardápio</HeaderSub>
 
           <HeaderButtons>
-            <Button>Ver Catálogo</Button>
+            <Button onClick={handleCatalog}>Ver Catálogo</Button>
             <Button onClick={handleNavigateToNewUser}>Novo Usuario</Button>
           </HeaderButtons>
 

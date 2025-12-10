@@ -73,8 +73,9 @@ export default function DashBoardAdmin() {
   };
 
   const handleCatalog = () => {
-    navigate("/home");
+    navigate("/");
   }
+  
   return (
     <Container>
       <Header>

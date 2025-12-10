@@ -142,12 +142,14 @@ export default function NovoProdutoAdmin() {
                             <option value="" disabled>
                                 Selecione uma categoria
                             </option>
-                            {categorias.map((categoria) => (
-                                <option key={categoria.id} value={categoria.id}>
-                                    {categoria.nome}
-                                </option>
-                            ))}
-                            
+                            {categorias
+                                .filter((c) => c.ativo === true)   // 🔥 só categorias ativas
+                                .map((categoria) => (
+                                    <option key={categoria.id} value={categoria.id}>
+                                        {categoria.nome}
+                                    </option>
+                                ))
+                            } 
                         </select>
 
                         <DivImageUpload>
