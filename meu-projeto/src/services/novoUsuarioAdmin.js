@@ -24,6 +24,7 @@ export async function createUsuario({
           numero:       endereco.numero,
           bairro:       endereco.bairro,
           cidade:       endereco.cidade,
+          estado:       endereco.estado,
           cep:          endereco.cep,
           complemento:  endereco.complemento || ""
         }
@@ -34,8 +35,9 @@ export async function createUsuario({
         }
       }
     );
-
+    
     return response.data; // retorna o usuário criado
+    
   } catch (error) {
     console.error("Erro no createUsuario:", error.response || error.message);
     throw error;

@@ -33,6 +33,7 @@ export default function CadastroUsuario() {
     cidade: "",
     estado: "",
     cep: "",
+    complemento: ""
   });
 
   const handleSubmit = async (e) => {
@@ -189,6 +190,18 @@ export default function CadastroUsuario() {
                 value={endereco.cep}
                 onChange={(e) =>
                   setEndereco({ ...endereco, cep: e.target.value })
+                }
+                required
+              />
+            </FormRow>
+
+            <FormRow>
+              <Label>Complemento</Label>
+              <Input
+                placeholder="Complemento..."
+                value={endereco.com}
+                onChange={(e) =>
+                  setEndereco({ ...endereco, complemento: e.target.value })
                 }
                 required
               />
