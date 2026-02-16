@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { createUsuario } from "../../services/novoUsuarioAdmin";
 import {
   Main,
   Container,
@@ -21,9 +22,9 @@ import {
 export default function CadastroUsuario() {
   const navigate = useNavigate();
   const [nome, setNome] = useState("");
+  const [senha, setSenha] = useState("");
   const [telefone, setTelefone] = useState("");
   const [email, setEmail] = useState("");
-  const [descricao, setDescricao] = useState("");
   const [tipo, setTipo] = useState("C");
   const [endereco, setEndereco] = useState({
     rua: "",
@@ -34,9 +35,24 @@ export default function CadastroUsuario() {
     cep: "",
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert("Usuário cadastrado!");
+    
+    try {
+      await createUsuario({
+        nome,
+        ativo: "true",
+        email,
+        senha,
+        telefone,
+        tipo,
+        endereco
+      });
+
+      alert("Usuário cadastrado com sucesso!");
+    } catch (error) {
+      alert("Erro ao cadastrar usuário");
+    }
   };
 
   return (
@@ -57,6 +73,16 @@ export default function CadastroUsuario() {
                 placeholder="Seu nome completo"
                 value={nome}
                 onChange={(e) => setNome(e.target.value)}
+                required
+              />
+            </FormRow>
+
+            <FormRow>
+              <Label>Senha<CampoObrigatorio>*</CampoObrigatorio></Label>
+              <Input
+                placeholder="Senha do Usuario"
+                value={senha}
+                onChange={(e) => setSenha(e.target.value)}
                 required
               />
             </FormRow>

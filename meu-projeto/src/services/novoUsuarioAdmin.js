@@ -2,24 +2,31 @@ import axios from "axios";
 
 export async function createUsuario({
   nome,
-  descricao,
   ativo,
   email,
   senha,
   telefone,
-  endereco // objeto com rua, numero, bairro, cidade, estado, cep
+  tipo,
+  endereco
 }) {
   try {
     const response = await axios.post(
       "http://localhost:8080/usuario/cadastrar",
       {
         nome,
-        descricao,
         ativo,
         email,
         senha,
         telefone,
-        endereco
+        tipo,
+        endereco: {
+          rua:          endereco.rua,
+          numero:       endereco.numero,
+          bairro:       endereco.bairro,
+          cidade:       endereco.cidade,
+          cep:          endereco.cep,
+          complemento:  endereco.complemento || ""
+        }
       },
       {
         headers: {
