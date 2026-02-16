@@ -8,6 +8,7 @@ import NovoProduto from "./containers/NovoProdutoAdmin";
 import AlterarProdutoAdmin from "./containers/AlterarProdutoAdmin";
 import DashBoardUsuario from "./containers/DashBoardUsuario";
 import NovoUsuario from "./containers/NovoUsuarioAdmin";
+import EditarUsuario from "./containers/EditarUsuarioAdmin";
 import Catalogo from "./containers/Catalogo";
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
         <Route path="/dashboard/produto/alterar/:idProduto" element={<AlterarProdutoAdmin />} />
         <Route path="/dashboard/usuario" element={<DashBoardUsuario />} />
         <Route path="/dashboard/usuario/novo" element={<NovoUsuario />} />
+        <Route path="/dashboard/usuario/alterar/:idUsuario" element={<EditarUsuario />} />
         <Route path="/" element={<Catalogo />}/>
       </Routes>
   );

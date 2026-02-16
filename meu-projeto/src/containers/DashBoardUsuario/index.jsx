@@ -43,7 +43,7 @@ import {
   ModalLabelItens,
 } from "./styles.js";
 import {listaUsuarios} from "../../services/ListaUsuario.js";
-import { alterarStatusProdutoAdmin } from "../../services/alterarStatusProdutoAdmin.js";
+import { alterarStatusUsuarioAdmin } from "../../services/alterarStatusUsuarioAdmin.js";
 
 export default function ListaProdutos() {
   const navigate = useNavigate();
@@ -96,7 +96,10 @@ export default function ListaProdutos() {
             
             setUsuarios((prevUsuarios) =>
               prevUsuarios.map((usuario) =>
-                usuario.id === id ? { ...usuario, ativo: !ativo } : usuario
+                
+                usuario.id === id
+                ? { ...usuario, ativo: ativo === "Sim" ? "Não" : "Sim" }
+                : usuario
               )
             );
           } else {
@@ -155,7 +158,9 @@ export default function ListaProdutos() {
                 </span>
               </StatHeader>
               <StatusValue>
-                <GreenText>{usuarios.filter((p) => p.ativo).length}</GreenText>
+                <GreenText>
+                  {usuarios.filter((p) => p.ativo === "Sim").length}
+                </GreenText>
               </StatusValue>
             </StatCard>
 
@@ -166,7 +171,9 @@ export default function ListaProdutos() {
                 </span>
               </StatHeader>
               <StatusValue>
-                <RedText>{usuarios.filter((p) => !p.ativo).length}</RedText>
+                <RedText>
+                  {usuarios.filter((p) => p.ativo !== "Sim").length}
+                </RedText>
               </StatusValue>
             </StatCard>
           </StatsGrid>
@@ -184,34 +191,44 @@ export default function ListaProdutos() {
           </BodyCatalogHeader>
 
         <BodyCatalogList>
-        {filteredUsuarios.length > 0 ? (
-            filteredUsuarios.map((usuario, index) => (
-            <BodyCatalogItem
-                key={index}
-                ativo={usuario.ativo ? "ativo" : "inativo"}
-            >
-                <BodyCatalogName>{usuario.nome}</BodyCatalogName>
-                <BodyCatalogDescProduto>{usuario.descricao || "Sem descrição"}</BodyCatalogDescProduto>
+          {filteredUsuarios.length > 0 ? (
+            filteredUsuarios.map((usuario, index) => {
 
-                <BodyCatalogActions>
-                <IconButton
-                    title="Editar"
-                    onClick={() => handleAlterarUsuario(usuario.id)}
+              console.log("Objeto usuario:", usuario);
+
+              return (
+                <BodyCatalogItem
+                  key={index}
+                  ativo={usuario.ativo ? "ativo" : "inativo"}
                 >
-                    <FaEdit size={18} />
-                </IconButton>
-                <IconButton
-                    onClick={() => handleAlterarStatusUsuario(usuario.id, usuario.ativo)}
-                    title="Alterar Status"
-                >
-                    <FaSync size={18} />
-                </IconButton>
-                </BodyCatalogActions>
-            </BodyCatalogItem>
-            ))
-        ) : (
+                  <BodyCatalogName>{usuario.nome}</BodyCatalogName>
+                  <BodyCatalogDescProduto>
+                    {usuario.descricao || "Sem descrição"}
+                  </BodyCatalogDescProduto>
+
+                  <BodyCatalogActions>
+                    <IconButton
+                      title="Editar"
+                      onClick={() => handleAlterarUsuario(usuario.id)}
+                    >
+                      <FaEdit size={18} />
+                    </IconButton>
+
+                    <IconButton
+                      onClick={() =>
+                        handleAlterarStatusUsuario(usuario.id, usuario.ativo)
+                      }
+                      title="Alterar Status"
+                    >
+                      <FaSync size={18} />
+                    </IconButton>
+                  </BodyCatalogActions>
+                </BodyCatalogItem>
+              );
+            })
+          ) : (
             <p>Nenhum usuario encontrado.</p>
-        )}
+          )}
         </BodyCatalogList>
 
         </Body>
