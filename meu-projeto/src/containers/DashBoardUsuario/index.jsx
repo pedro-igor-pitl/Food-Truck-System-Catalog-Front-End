@@ -53,9 +53,15 @@ export default function ListaProdutos() {
   useEffect(() => {
     async function fetchUsuarios() {
       try {
-        const data = await listaUsuarios();  // aqui recebe o array de categorias
-        setUsuarios(data);
-        console.log("Usuarios carregados:", usuarios);
+        const data = await listaUsuarios();
+
+        const usuariosNormalizados = data.map((u) => ({
+          ...u,
+          ativo: u.ativo === "Sim"
+        }));
+
+        setUsuarios(usuariosNormalizados);
+
       } catch (error) {
         console.error("Erro ao buscar usuarios:", error);
       }
@@ -63,6 +69,7 @@ export default function ListaProdutos() {
 
     fetchUsuarios();
   }, []);
+
 
 
   const HandleLogout = () => {
@@ -84,21 +91,18 @@ export default function ListaProdutos() {
   );
 
       const handleAlterarStatusUsuario = async (id, ativo) => {
-        console.log("Tentando alterar status do usuario com ID:", id);
         
         if (!window.confirm(`Tem certeza que deseja ${ativo ? 'desativar' : 'ativar'} este usuario?`)) return;
 
         try {
           const response = await alterarStatusProdutoAdmin(id);
 
-          if (response.status === 204) {
-            console.log("Usuario alterada com sucesso.");
-            
+          if (response.status === 204) {      
             setUsuarios((prevUsuarios) =>
               prevUsuarios.map((usuario) =>
                 
-                usuario.id === id
-                ? { ...usuario, ativo: ativo === "Sim" ? "Não" : "Sim" }
+              usuario.id === id
+                ? { ...usuario, ativo: !usuario.ativo }
                 : usuario
               )
             );
@@ -159,7 +163,7 @@ export default function ListaProdutos() {
               </StatHeader>
               <StatusValue>
                 <GreenText>
-                  {usuarios.filter((p) => p.ativo === "Sim").length}
+                  {usuarios.filter((p) => p.ativo).length}
                 </GreenText>
               </StatusValue>
             </StatCard>
@@ -172,7 +176,7 @@ export default function ListaProdutos() {
               </StatHeader>
               <StatusValue>
                 <RedText>
-                  {usuarios.filter((p) => p.ativo !== "Sim").length}
+                  {usuarios.filter((p) => !p.ativo).length}
                 </RedText>
               </StatusValue>
             </StatCard>
@@ -193,9 +197,6 @@ export default function ListaProdutos() {
         <BodyCatalogList>
           {filteredUsuarios.length > 0 ? (
             filteredUsuarios.map((usuario, index) => {
-
-              console.log("Objeto usuario:", usuario);
-
               return (
                 <BodyCatalogItem
                   key={index}
