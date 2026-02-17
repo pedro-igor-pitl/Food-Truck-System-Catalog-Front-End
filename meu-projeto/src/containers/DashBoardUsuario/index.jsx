@@ -95,7 +95,7 @@ export default function ListaProdutos() {
         if (!window.confirm(`Tem certeza que deseja ${ativo ? 'desativar' : 'ativar'} este usuario?`)) return;
 
         try {
-          const response = await alterarStatusProdutoAdmin(id);
+          const response = await alterarStatusUsuarioAdmin(id);
 
           if (response.status === 204) {      
             setUsuarios((prevUsuarios) =>
