@@ -11,8 +11,9 @@ export async function alterarUsuario(id, usuario) {
         }
       }
     );
-
+    console.log("Dados da alteração: ", response.data);
     return response.data;
+    
 
   } catch (error) {
     console.error(

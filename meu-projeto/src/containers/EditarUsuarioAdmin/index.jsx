@@ -53,17 +53,18 @@ export default function AlterarUsuario() {
           setTelefone(usuario.telefone);
           setEmail(usuario.email);
           setTipo(usuario.tipo);
-          setAtivo(usuario.ativo);
+          setAtivo(usuario.ativo === "Sim");
 
           setEndereco({
-            rua: usuario.endereco?.rua || "",
-            numero: usuario.endereco?.numero || "",
-            bairro: usuario.endereco?.bairro || "",
-            cidade: usuario.endereco?.cidade || "",
-            estado: usuario.endereco?.estado || "",
-            cep: usuario.endereco?.cep || "",
-            complemento: usuario.endereco?.complemento || ""
+            rua: usuario.rua || "",
+            numero: usuario.numero || "",
+            bairro: usuario.bairro || "",
+            cidade: usuario.cidade || "",
+            estado: usuario.estado || "",
+            cep: usuario.cep || "",
+            complemento: usuario.complemento || ""
           });
+
         }
       } catch (error) {
         console.error("Erro ao buscar usuário:", error);
@@ -81,16 +82,18 @@ export default function AlterarUsuario() {
     try {
       await alterarUsuario(idUsuario, {
         nome,
-        senha: senha || undefined, // só envia se alterar
+        senha: senha || undefined,
         telefone,
         email,
         tipo,
-        ativo,
+        ativo: ativo ? "Sim" : "Não",
         endereco
       });
 
+
+
       alert("Usuário alterado com sucesso!");
-      navigate("/dashboard/usuarios", { state: { updated: true } });
+      navigate("/dashboard/usuario", { state: { updated: true } });
 
     } catch (error) {
       console.error("Erro ao alterar usuário:", error);
@@ -146,10 +149,14 @@ export default function AlterarUsuario() {
 
             <FormRow>
               <Label>Ativo</Label>
-              <Select value={ativo} onChange={(e) => setAtivo(e.target.value === "true")}>
+              <Select
+                value={ativo ? "true" : "false"}
+                onChange={(e) => setAtivo(e.target.value === "true")}
+              >
                 <option value="true">Ativo</option>
                 <option value="false">Inativo</option>
               </Select>
+
             </FormRow>
           </Section>
 
