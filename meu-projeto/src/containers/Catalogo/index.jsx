@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { listaProdutosCatalogo } from "../../services/ListaProdutoCatalogo.js";
 import cardIcon from "../../assets/carrinhoCompras.png";
 import {
@@ -33,6 +34,7 @@ export default function App() {
   const [produtos, setProdutos] = useState([]);
   const [cartOpen, setCartOpen] = useState(false);
   const [cart, setCart] = useState([]);
+  const navigate = useNavigate();
 
   function addToCart(produto) {
     setCart(prevCart => {
@@ -76,6 +78,10 @@ export default function App() {
     acc[item.categoria].push(item);
     return acc;
   }, {});
+
+  const handleNavigateVerificarUsuario = () => {
+      navigate("/verificar/usuario");
+  }
 
   return (
     <Container>
@@ -183,8 +189,11 @@ export default function App() {
                   .toFixed(2)}
               </div>
             )}
-
-
+              <div style={{alignItems: "center", justifyContent: "flex-end" }}>
+                <div style={{ marginTop: "20px", fontWeight: "bold"}}>
+                  <button onClick={handleNavigateVerificarUsuario} style={{ marginTop: "20px", fontWeight: "bold"}}>Finalizar</button>
+                </div>
+              </div>
           </div>
         </div>
       )}
