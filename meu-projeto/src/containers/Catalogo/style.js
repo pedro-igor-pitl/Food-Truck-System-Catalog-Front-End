@@ -175,3 +175,41 @@ export const Copy = styled.p`
   font-size: 14px;
   opacity: 0.7;
 `;
+
+export const overlayStyle = {
+  position: "fixed",
+  top: 0,
+  right: 0,
+  bottom: 0,
+  left: 0,
+  backgroundColor: "rgba(0,0,0,0.5)",
+  display: "flex",
+  justifyContent: "flex-end",
+  zIndex: 1000
+};
+
+export const cartStyle = {
+  background: "#fff",
+  width: "400px",
+  maxHeight: "100vh",
+  overflowY: "auto",
+  padding: "20px",
+  borderRadius: "8px"
+};
+
+export const cartHeader = {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  marginBottom: "20px"
+};
+
+export const closeButton = {
+  background: "none",
+  border: "none",
+  fontSize: "18px",
+  cursor: "pointer",
+  color: "black",
+  backgroundColor: "gray",
+  borderRadius: "50px"
+};

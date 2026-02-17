@@ -161,9 +161,9 @@ export default function DashBoardAdmin() {
 
         <ActionCard>
           <ActionTitle>Gerenciar Pedidos</ActionTitle>
-          <ActionDesc>Visualize os usuarios do seu negocio</ActionDesc>
+          <ActionDesc>Visualize os pedidos do seu negocio</ActionDesc>
           <ActionButtons>
-            <ActionButtonPrimary>Ver Usuarios</ActionButtonPrimary>
+            <ActionButtonPrimary>Ver Pedidos</ActionButtonPrimary>
           </ActionButtons>
         </ActionCard>
       </ActionsGrid>

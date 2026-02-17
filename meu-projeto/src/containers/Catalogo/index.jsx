@@ -22,11 +22,36 @@ import {
   ContactButton,
   Copy,
   CartButton,
-  CartIcon
+  CartIcon,
+  overlayStyle,
+  cartStyle,
+  cartHeader,
+  closeButton
 } from "./style";
 
 export default function App() {
   const [produtos, setProdutos] = useState([]);
+  const [cartOpen, setCartOpen] = useState(false);
+  const [cart, setCart] = useState([]);
+
+  function addToCart(produto) {
+    setCart(prevCart => {
+      const itemExistente = prevCart.find(p => p.id === produto.id);
+
+      if (itemExistente) {
+        return prevCart.map(p =>
+          p.id === produto.id
+            ? { ...p, quantidade: p.quantidade + 1 }
+            : p
+        );
+      }
+
+      return [...prevCart, { ...produto, quantidade: 1 }];
+    });
+
+    setCartOpen(true); // abre automaticamente
+  }
+
 
   useEffect(() => {
     async function carregarDados() {
@@ -46,13 +71,19 @@ export default function App() {
     return acc;
   }, {});
 
+  const cartCategorias = cart.reduce((acc, item) => {
+    if (!acc[item.categoria]) acc[item.categoria] = [];
+    acc[item.categoria].push(item);
+    return acc;
+  }, {});
+
   return (
     <Container>
       <Hero>
         <Navbar>
           <h1>Food Truck Delicias</h1>
 
-          <button style={CartButton}>
+          <button style={CartButton} onClick={() => setCartOpen(true)}>
             <img src={cardIcon} alt="Carrinho" style={CartIcon} />
           </button>
         </Navbar>
@@ -71,18 +102,20 @@ export default function App() {
         <Title>Nosso Cardápio</Title>
         <Subtitle>Descubra sabores únicos preparados com ingredientes frescos!</Subtitle>
 
-        {Object.keys(categorias).map((categoria, index) => (
-          <Category key={index}>
+          {Object.keys(categorias).map((categoria) => (
+            <Category key={categoria}>
             <h3>{categoria}</h3>
             <CardGrid>
-              {categorias[categoria].map((item, i) => (
-                <Card key={i}>
+                {categorias[categoria].map((item) => (
+                  <Card key={`${categoria}-${item.id}`}>
                   <CardImage src={item.imagemUrl} />
                   <h4>{item.produto}</h4>
                   <p>{item.descricao}</p>
                   <PriceRow>
                     <Price>R$ {item.preco.toFixed(2)}</Price>
-                    <Button>Adicionar</Button>
+                    <Button onClick={() => addToCart(item)}>
+                      Adicionar
+                    </Button>
                   </PriceRow>
                 </Card>
               ))}
@@ -110,6 +143,52 @@ export default function App() {
         <ContactButton>Falar no WhatsApp</ContactButton>
         <Copy>© 2024 Food Truck Delicias - Todos os direitos reservados.</Copy>
       </Footer>
+
+      {cartOpen && (
+        <div style={overlayStyle}>
+          <div style={cartStyle}>
+            <div style={cartHeader}>
+              <h3>Seu Carrinho</h3>
+              <button onClick={() => setCartOpen(false)} style={closeButton}>
+                X
+              </button>
+            </div>
+
+            {cart.length === 0 ? (
+              <p>Seu carrinho está vazio.</p>
+            ) : (
+              Object.keys(cartCategorias).map((categoria) => (
+                <div key={categoria}>
+                <h4 style={{ borderBottom: "1px solid #ccc", paddingBottom: "5px" }}>
+                  {categoria}
+                </h4>
+
+                {cartCategorias[categoria].map(item => (
+                  <div key={`${categoria}-${item.id}`}>
+                    <strong>{item.produto}</strong>
+                    <p>Qtd: {item.quantidade}</p>
+                    <p>R$ {(item.preco * item.quantidade).toFixed(2)}</p>
+                  </div>
+                ))}
+              </div>
+            ))
+
+            )}
+
+            {cart.length > 0 && (
+              <div style={{ marginTop: "20px", fontWeight: "bold" }}>
+                Total: R${" "}
+                {cart
+                  .reduce((total, item) => total + item.preco * item.quantidade, 0)
+                  .toFixed(2)}
+              </div>
+            )}
+
+
+          </div>
+        </div>
+      )}
+
     </Container>
   );
 }
