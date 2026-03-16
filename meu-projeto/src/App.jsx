@@ -11,6 +11,8 @@ import NovoUsuario from "./containers/NovoUsuarioAdmin";
 import EditarUsuario from "./containers/EditarUsuarioAdmin";
 import Catalogo from "./containers/Catalogo";
 import VerificarUsuarioPedido from "./containers/VerificarUsuarioPedido";
+import RealizarPedido from "./containers/RealizarPedido";
+
 export default function App() {
   return (
       <Routes>
@@ -26,6 +28,7 @@ export default function App() {
         <Route path="/dashboard/usuario/alterar/:idUsuario" element={<EditarUsuario />} />
         <Route path="/" element={<Catalogo />}/>
         <Route path="/verificar/usuario" element={<VerificarUsuarioPedido />} />
+        <Route path="/RealizarPedido" element={<RealizarPedido />} />
       </Routes>
   );
 }

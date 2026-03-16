@@ -7,31 +7,36 @@ import {
   VerificarButton,
   ErroMensagem
 } from "./styles";
-import { Navigate } from "react-router-dom";
+
+import { useNavigate } from "react-router-dom";
 
 export default function VerificarUsuario() {
+  const navigate = useNavigate();
   const [valor, setValor] = useState("");
   const [erro, setErro] = useState("");
 
-  const handleVerificar = async () => {
-    if (!valor.trim()) {
-      setErro("Digite um email ou telefone.");
-      return;
-    }
+const handleVerificar = async () => {
+  if (!valor.trim()) {
+    setErro("Digite um email ou telefone.");
+    return;
+  }
 
-    // chama o service correto
-    const usuario = await verificarUsuario(valor);
+  const usuario = await verificarUsuario(valor);
 
-    if (usuario) {
-      console.log("Usuário encontrado:", usuario);
-      setErro("");
-    //   Navigate("/revisarPedido");
-    } else {
-      console.log("Usuário não encontrado");
-      setErro("Usuário não encontrado. Continue para cadastro.");
-      // redirecionar para cadastro se quiser
-    }
-  };
+  if (usuario) {
+    console.log("Usuário encontrado:", usuario);
+    setErro("");
+
+    // salva no localStorage
+    localStorage.setItem("usuario", JSON.stringify(usuario));
+    localStorage.setItem("emailUsuario", valor);
+
+    navigate("/RealizarPedido");
+  } else {
+    console.log("Usuário não encontrado");
+    setErro("Usuário não encontrado. Continue para cadastro.");
+  }
+};
 
   return (
     <VerificarContainer>
