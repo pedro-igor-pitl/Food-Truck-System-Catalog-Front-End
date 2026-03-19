@@ -24,17 +24,19 @@ const handleVerificar = async () => {
   const usuario = await verificarUsuario(valor);
 
   if (usuario) {
-    console.log("Usuário encontrado:", usuario);
-    setErro("");
+    localStorage.removeItem("emailUsuario");
+    localStorage.removeItem("usuario");
 
-    // salva no localStorage
     localStorage.setItem("usuario", JSON.stringify(usuario));
-    localStorage.setItem("emailUsuario", valor);
 
-    navigate("/RealizarPedido");
+    navigate("/RealizarPedido", {
+      state: {
+        usuario: usuario || null,
+        email: valor
+      }
+    });
   } else {
-    console.log("Usuário não encontrado");
-    setErro("Usuário não encontrado. Continue para cadastro.");
+    navigate("/RealizarPedido", { state: usuario });
   }
 };
 
@@ -45,7 +47,7 @@ const handleVerificar = async () => {
 
         <VerificarInput
           type="text"
-          placeholder="Digite seu email ou telefone"
+          placeholder="Digite seu email"
           value={valor}
           onChange={(e) => setValor(e.target.value)}
         />

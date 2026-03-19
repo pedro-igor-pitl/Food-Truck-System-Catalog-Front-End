@@ -146,3 +146,25 @@ export const Button = styled.button`
     cursor: not-allowed;
   }
 `;
+
+export const NomeProduto = styled.p `
+  color: #000000;
+`;
+
+export const QuantidadeProduto = styled.p `
+  color: #000000;
+`;
+
+export const PrecoProduto = styled.p `
+  color: #000000;
+`;
+
+export const DivProdutoCarrinho = styled.div `
+  
+`;
+
+export const DivPaiProdutosCarrinho = styled.div `
+  max-height: 300px;
+  overflow-y: scroll;
+  padding-right: 5px;
+`;

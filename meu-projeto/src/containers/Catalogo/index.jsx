@@ -33,10 +33,14 @@ import {
 export default function App() {
   const [produtos, setProdutos] = useState([]);
   const [cartOpen, setCartOpen] = useState(false);
-  const [cart, setCart] = useState([]);
+  const [cart, setCart] = useState(() => {
+    const carrinhoSalvo = localStorage.getItem("carrinho");
+    return carrinhoSalvo ? JSON.parse(carrinhoSalvo) : [];
+  });
   const navigate = useNavigate();
 
   function addToCart(produto) {
+    
     setCart(prevCart => {
       const itemExistente = prevCart.find(p => p.id === produto.id);
 
@@ -66,6 +70,19 @@ export default function App() {
     }
     carregarDados();
   }, []);
+  
+
+  useEffect(() => {
+    localStorage.setItem("carrinho", JSON.stringify(cart));
+  }, [cart]);
+
+  useEffect(() => {
+    const carrinhoSalvo = localStorage.getItem("carrinho");
+
+    if (carrinhoSalvo) {
+      setCart(JSON.parse(carrinhoSalvo));
+    }
+  }, []);
 
   const categorias = produtos.reduce((acc, item) => {
     if (!acc[item.categoria]) acc[item.categoria] = [];
@@ -76,9 +93,11 @@ export default function App() {
   const cartCategorias = cart.reduce((acc, item) => {
     if (!acc[item.categoria]) acc[item.categoria] = [];
     acc[item.categoria].push(item);
+    console.log(item);
     return acc;
   }, {});
 
+  
   const handleNavigateVerificarUsuario = () => {
       navigate("/verificar/usuario");
   }
