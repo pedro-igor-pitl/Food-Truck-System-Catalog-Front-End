@@ -102,6 +102,10 @@ export default function App() {
       navigate("/verificar/usuario");
   }
 
+  const RemoveItemCarrinho = (id) => {
+    setCart(prevCart => prevCart.filter(item => item.id !== id));
+  }
+
   return (
     <Container>
       <Hero>
@@ -187,14 +191,18 @@ export default function App() {
                 <h4 style={{ borderBottom: "1px solid #ccc", paddingBottom: "5px" }}>
                   {categoria}
                 </h4>
-
+                
                 {cartCategorias[categoria].map(item => (
                   <div key={`${categoria}-${item.id}`}>
-                    <strong>{item.produto}</strong>
+                    <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+                      <strong>{item.produto}</strong>
+                      <button onClick={() => RemoveItemCarrinho(item.id)}>X</button>
+                    </div>
                     <p>Qtd: {item.quantidade}</p>
                     <p>R$ {(item.preco * item.quantidade).toFixed(2)}</p>
                   </div>
                 ))}
+                
               </div>
             ))
 
