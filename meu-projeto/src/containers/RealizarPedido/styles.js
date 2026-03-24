@@ -5,12 +5,11 @@ export const Main = styled.main`
   top: 0;
   left: 0;
   width: 100%;
-  height: 100vh;
-
+  height: 100%;
+  overflow-y: scroll;
   display: flex;
   justify-content: center;
   align-items: center;
-
   background-color: #ffffffff; /* cor de fundo escura */
   z-index: 100; /* garante que fique acima de outros elementos */
 `;
@@ -25,6 +24,7 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: stretch;
+  margin-top: 35%;
 `;
 
 export const Header = styled.div`

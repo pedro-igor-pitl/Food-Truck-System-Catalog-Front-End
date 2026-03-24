@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import { GETUsuarioPorEmailRetorno } from "../../services/GETInfoUsuariosCompleto.js";
 
 import {
   Main,
@@ -29,7 +30,14 @@ export default function RevisarPedido() {
   const [usuario, setUsuario] = useState({
     nome: usuarioRecebido?.nome || "",
     email: usuarioRecebido?.email || emailDigitado,
-    telefone: usuarioRecebido?.telefone || ""
+    telefone: usuarioRecebido?.telefone || "",
+    cep: usuarioRecebido?.cep || "",
+    cidade: usuarioRecebido?.cidade || "",
+    complemento: usuarioRecebido?.complemento || "",
+    estado: usuarioRecebido?.estado || "",
+    rua: usuarioRecebido?.rua || "",
+    bairro: usuarioRecebido?.bairro || "",
+    numero: usuarioRecebido?.numero || "",
   });
 
   const [carrinho, setCarrinho] = useState([]);
@@ -37,6 +45,27 @@ export default function RevisarPedido() {
 
   useEffect(() => {
     carregarCarrinho();
+  }, []);
+
+  useEffect( () => {
+    async function fetchUsuarios() {
+      try {
+        const data = await GETUsuarioPorEmailRetorno(usuario.email);
+
+        const usuariosNormalizados = data.map((u) => ({
+          ...u,
+          ativo: u.ativo === "Sim"
+        }));
+
+        setUsuario(usuariosNormalizados);
+
+        console.log("Usuario retornado: ", data);
+      } catch (error) {
+        console.error("Erro ao buscar usuarios:", error);
+      }
+    }
+
+    fetchUsuarios();
   }, []);
 
   async function carregarCarrinho() {
@@ -85,6 +114,63 @@ export default function RevisarPedido() {
               value={usuario.telefone || ""}
               onChange={(e) =>
                 setUsuario({ ...usuario, telefone: e.target.value })
+              }
+            />
+
+            <Label>Cep *</Label>
+            <Input
+              value={usuario.cep || ""}
+              onChange={(e) =>
+                setUsuario({ ...usuario, cep: e.target.value })
+              }
+            />
+
+            <Label>Bairro *</Label>
+            <Input
+              value={usuario.bairro || ""}
+              onChange={(e) =>
+                setUsuario({ ...usuario, bairro: e.target.value })
+              }
+            />
+
+            <Label>Cidade *</Label>
+            <Input
+              value={usuario.cidade || ""}
+              onChange={(e) =>
+                setUsuario({ ...usuario, cidade: e.target.value })
+              }
+            />
+
+            <Label>Complemento *</Label>
+            <Input
+              value={usuario.complemento || ""}
+              onChange={(e) =>
+                setUsuario({ ...usuario, cidade: e.target.value })
+              }
+            />
+
+            <Label>Numero *</Label>
+            <Input
+              value={usuario.numero || ""}
+              onChange={(e) =>
+                setUsuario({ ...usuario, cidade: e.target.value })
+              }
+            />
+
+
+            <Label>Rua *</Label>
+            <Input
+              value={usuario.rua || ""}
+              onChange={(e) =>
+                setUsuario({ ...usuario, cidade: e.target.value })
+              }
+            />
+
+            <Label>Estado *</Label>
+            <Input
+              value={usuario.estado || ""}
+              onChange={(e) =>
+                setUsuario({ ...usuario, cidade: e.target.value })
               }
             />
 
