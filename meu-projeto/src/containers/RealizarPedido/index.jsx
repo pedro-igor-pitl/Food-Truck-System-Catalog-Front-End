@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { GETUsuarioPorEmailRetorno } from "../../services/GETInfoUsuariosCompleto.js";
+import { useNavigate } from "react-router-dom";
 
 import {
   Main,
@@ -23,7 +24,7 @@ import { buscarCarrinho } from "../../services/carrinhoService";
 
 export default function RevisarPedido() {
   const location = useLocation();
-
+  const navigate = useNavigate();
   const usuarioRecebido = location.state?.usuario;
   const emailDigitado = location.state?.email || "";
 
@@ -57,7 +58,11 @@ export default function RevisarPedido() {
           ativo: u.ativo === "Sim"
         }));
 
-        setUsuario(usuariosNormalizados);
+        const usuarioEncontrado = usuariosNormalizados[0];
+
+        if (usuarioEncontrado) {
+          setUsuario(usuarioEncontrado);
+        }
 
         console.log("Usuario retornado: ", data);
       } catch (error) {
@@ -78,6 +83,51 @@ export default function RevisarPedido() {
       setLoading(false);
     }
   }
+
+  const enviarParaWhatsApp = () => {
+  if (carrinho.length === 0) {
+    alert("Carrinho vazio!");
+    return;
+  }
+
+  const numeroWhatsApp = import.meta.env.VITE_WHATSAPP_NUMBER;
+
+  let mensagem = `🛒 *Novo Pedido*%0A%0A`;
+
+  mensagem += `👤 *Cliente:* ${usuario.nome}%0A`;
+  mensagem += `📧 *Email:* ${usuario.email}%0A`;
+  mensagem += `📞 *Telefone:* ${usuario.telefone}%0A%0A`;
+
+  mensagem += `📍 *Endereço:*%0A`;
+  mensagem += `${usuario.rua}, ${usuario.numero}%0A`;
+  mensagem += `${usuario.bairro} - ${usuario.cidade}/${usuario.estado}%0A`;
+  mensagem += `CEP: ${usuario.cep}%0A`;
+  mensagem += `Complemento: ${usuario.complemento}%0A%0A`;
+
+  mensagem += `📦 *Itens do Pedido:*%0A`;
+
+  let total = 0;
+
+    carrinho.forEach(item => {
+      const subtotal = item.preco * item.quantidade;
+      total += subtotal;
+
+      mensagem += `- ${item.produto} (x${item.quantidade}) - R$ ${subtotal.toFixed(2)}%0A`;
+    });
+
+    mensagem += `%0A💰 *Total:* R$ ${total.toFixed(2)}`;
+
+    const url = `https://wa.me/${numeroWhatsApp}?text=${mensagem}`;
+
+    window.open(url, "_blank");
+
+    localStorage.removeItem("carrinho");
+    setCarrinho([]);
+
+    setTimeout(() => {
+      navigate("/");
+    }, 1000);
+  };
 
   return (
     <Main>
@@ -187,7 +237,7 @@ export default function RevisarPedido() {
               ))}
             </DivPaiProdutosCarrinho>
 
-            <Button type="submit">
+            <Button type="button" onClick={enviarParaWhatsApp}>
               Finalizar Pedido
             </Button>
 
