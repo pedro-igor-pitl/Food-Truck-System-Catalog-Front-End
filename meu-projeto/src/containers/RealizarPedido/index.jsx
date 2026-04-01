@@ -39,6 +39,7 @@ export default function RevisarPedido() {
     rua: usuarioRecebido?.rua || "",
     bairro: usuarioRecebido?.bairro || "",
     numero: usuarioRecebido?.numero || "",
+    formaPagamento: usuarioRecebido?.formaPagamento || "",
   });
 
   const [carrinho, setCarrinho] = useState([]);
@@ -90,34 +91,41 @@ export default function RevisarPedido() {
     return;
   }
 
+  if (!usuario.formaPagamento) {
+    alert("Selecione a forma de pagamento!");
+    return;
+  }
+
   const numeroWhatsApp = import.meta.env.VITE_WHATSAPP_NUMBER;
 
-  let mensagem = `🛒 *Novo Pedido*%0A%0A`;
+  let mensagem = `🛒 *Novo Pedido*\n\n`;
 
-  mensagem += `👤 *Cliente:* ${usuario.nome}%0A`;
-  mensagem += `📧 *Email:* ${usuario.email}%0A`;
-  mensagem += `📞 *Telefone:* ${usuario.telefone}%0A%0A`;
+  mensagem += `👤 *Cliente:* ${usuario.nome}\n`;
+  mensagem += `📧 *Email:* ${usuario.email}\n`;
+  mensagem += `📞 *Telefone:* ${usuario.telefone}\n\n`;
 
-  mensagem += `📍 *Endereço:*%0A`;
-  mensagem += `${usuario.rua}, ${usuario.numero}%0A`;
-  mensagem += `${usuario.bairro} - ${usuario.cidade}/${usuario.estado}%0A`;
-  mensagem += `CEP: ${usuario.cep}%0A`;
-  mensagem += `Complemento: ${usuario.complemento}%0A%0A`;
+  mensagem += `📍 *Endereço:*\n`;
+  mensagem += `${usuario.rua}, ${usuario.numero}\n`;
+  mensagem += `${usuario.bairro} - ${usuario.cidade}/${usuario.estado}\n`;
+  mensagem += `CEP: ${usuario.cep}\n`;
+  mensagem += `Complemento: ${usuario.complemento}\n\n`;
 
-  mensagem += `📦 *Itens do Pedido:*%0A`;
+  mensagem += `💳 *Forma de Pagamento:* ${usuario.formaPagamento}\n\n`;
+
+  mensagem += `📦 *Itens do Pedido:*\n`;
 
   let total = 0;
 
-    carrinho.forEach(item => {
-      const subtotal = item.preco * item.quantidade;
-      total += subtotal;
+  carrinho.forEach(item => {
+    const subtotal = item.preco * item.quantidade;
+    total += subtotal;
 
-      mensagem += `- ${item.produto} (x${item.quantidade}) - R$ ${subtotal.toFixed(2)}%0A`;
-    });
+    mensagem += `- ${item.produto} (x${item.quantidade}) - R$ ${subtotal.toFixed(2)}\n`;
+  });
 
-    mensagem += `%0A💰 *Total:* R$ ${total.toFixed(2)}`;
+  mensagem += `\n💰 *Total:* R$ ${total.toFixed(2)}`;
 
-    const url = `https://wa.me/${numeroWhatsApp}?text=${mensagem}`;
+    const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensagem)}`;
 
     window.open(url, "_blank");
 
@@ -195,7 +203,7 @@ export default function RevisarPedido() {
             <Input
               value={usuario.complemento || ""}
               onChange={(e) =>
-                setUsuario({ ...usuario, cidade: e.target.value })
+                setUsuario({ ...usuario, complemento: e.target.value })
               }
             />
 
@@ -203,7 +211,7 @@ export default function RevisarPedido() {
             <Input
               value={usuario.numero || ""}
               onChange={(e) =>
-                setUsuario({ ...usuario, cidade: e.target.value })
+                setUsuario({ ...usuario, numero: e.target.value })
               }
             />
 
@@ -212,7 +220,7 @@ export default function RevisarPedido() {
             <Input
               value={usuario.rua || ""}
               onChange={(e) =>
-                setUsuario({ ...usuario, cidade: e.target.value })
+                setUsuario({ ...usuario, rua: e.target.value })
               }
             />
 
@@ -220,9 +228,28 @@ export default function RevisarPedido() {
             <Input
               value={usuario.estado || ""}
               onChange={(e) =>
-                setUsuario({ ...usuario, cidade: e.target.value })
+                setUsuario({ ...usuario, estado: e.target.value })
               }
             />
+
+            <Label>Forma de Pagamento *</Label>
+            <select
+              value={usuario.formaPagamento || ""}
+              onChange={(e) =>
+                setUsuario({ ...usuario, formaPagamento: e.target.value })
+              }
+              style={{
+                padding: "10px",
+                borderRadius: "6px",
+                border: "1px solid #ccc",
+                marginBottom: "10px"
+              }}
+            >
+              <option value="">Selecione</option>
+              <option value="Cartão">Cartão</option>
+              <option value="Pix">Pix</option>
+              <option value="Dinheiro">Dinheiro</option>
+            </select>
 
             <Label>Itens do Carrinho</Label>
             <DivPaiProdutosCarrinho>
