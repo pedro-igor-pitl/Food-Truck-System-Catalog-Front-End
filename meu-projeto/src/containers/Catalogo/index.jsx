@@ -27,7 +27,10 @@ import {
   overlayStyle,
   cartStyle,
   cartHeader,
-  closeButton
+  closeButton,
+  QuantityControl,
+  QuantityButton,
+  QuantityText
 } from "./style";
 
 export default function App() {
@@ -105,6 +108,28 @@ export default function App() {
   const RemoveItemCarrinho = (id) => {
     setCart(prevCart => prevCart.filter(item => item.id !== id));
   }
+
+  const increaseItem = (id) => {
+    setCart(prevCart =>
+      prevCart.map(item =>
+        item.id === id
+          ? { ...item, quantidade: item.quantidade + 1 }
+          : item
+      )
+    );
+  };
+
+  const decreaseItem = (id) => {
+    setCart(prevCart =>
+      prevCart
+        .map(item =>
+          item.id === id
+            ? { ...item, quantidade: item.quantidade - 1 }
+            : item
+        )
+        .filter(item => item.quantidade > 0) // remove se for 0
+    );
+  };
 
   return (
     <Container>
@@ -198,7 +223,11 @@ export default function App() {
                       <strong>{item.produto}</strong>
                       <button onClick={() => RemoveItemCarrinho(item.id)}>X</button>
                     </div>
-                    <p>Qtd: {item.quantidade}</p>
+                    <QuantityControl style={{display: "flex", justifyContent: "space-around", alignItems: "start"}}>
+                      <QuantityText>Qtd: {item.quantidade}</QuantityText>
+                      <QuantityButton  onClick={() => decreaseItem(item.id)}>-</QuantityButton>
+                      <QuantityButton  onClick={() => increaseItem(item.id)}>+</QuantityButton>
+                    </QuantityControl>
                     <p>R$ {(item.preco * item.quantidade).toFixed(2)}</p>
                   </div>
                 ))}

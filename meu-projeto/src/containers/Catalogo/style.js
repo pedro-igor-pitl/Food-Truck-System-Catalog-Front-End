@@ -213,3 +213,42 @@ export const closeButton = {
   backgroundColor: "gray",
   borderRadius: "50px"
 };
+
+export const QuantityControl = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 5px;
+`;
+
+export const QuantityButton = styled.button`
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: none;
+  background: #f59e0b;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s;
+
+  &:hover {
+    background: #d97706;
+    transform: scale(1.1);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+`;
+
+export const QuantityText = styled.span`
+  font-size: 14px;
+  font-weight: bold;
+  min-width: 40px;
+  text-align: center;
+`;
