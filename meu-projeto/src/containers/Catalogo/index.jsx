@@ -102,8 +102,13 @@ export default function App() {
 
   
   const handleNavigateVerificarUsuario = () => {
-      navigate("/verificar/usuario");
-  }
+    if (cart.length === 0) {
+      alert("Seu carrinho está vazio!");
+      return;
+    }
+
+    navigate("/verificar/usuario");
+  };
 
   const RemoveItemCarrinho = (id) => {
     setCart(prevCart => prevCart.filter(item => item.id !== id));
@@ -247,7 +252,18 @@ export default function App() {
             )}
               <div style={{alignItems: "center", justifyContent: "flex-end" }}>
                 <div style={{ marginTop: "20px", fontWeight: "bold"}}>
-                  <button onClick={handleNavigateVerificarUsuario} style={{ marginTop: "20px", fontWeight: "bold"}}>Finalizar</button>
+                  <button
+                    onClick={handleNavigateVerificarUsuario}
+                    disabled={cart.length === 0}
+                    style={{
+                      marginTop: "20px",
+                      fontWeight: "bold",
+                      opacity: cart.length === 0 ? 0.5 : 1,
+                      cursor: cart.length === 0 ? "not-allowed" : "pointer"
+                    }}
+                  >
+                    Finalizar
+                  </button>
                 </div>
               </div>
           </div>
