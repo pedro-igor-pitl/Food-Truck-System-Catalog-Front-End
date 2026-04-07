@@ -362,9 +362,10 @@ export default function RevisarPedido() {
               }}
             >
               <option value="">Selecione</option>
-              <option value="Cartão">Cartão</option>
-              <option value="Pix">Pix</option>
-              <option value="Dinheiro">Dinheiro</option>
+              <option value="CARTAO_CREDITO">Cartão de Crédito</option>
+              <option value="CARTAO_DEBITO">Cartão de Débito</option>
+              <option value="PIX">Pix</option>
+              <option value="DINHEIRO">Dinheiro</option>
             </select>
 
             <Label>Itens do Carrinho</Label>
