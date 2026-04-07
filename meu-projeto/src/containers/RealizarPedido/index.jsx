@@ -85,45 +85,161 @@ export default function RevisarPedido() {
     }
   }
 
-  const enviarParaWhatsApp = () => {
-  if (carrinho.length === 0) {
-    alert("Carrinho vazio!");
-    return;
+  async function salvarPedidoBackend() {
+    try {
+      let total = 0;
+
+      const itens = carrinho.map(item => {
+        const subtotal = item.preco * item.quantidade;
+        total += subtotal;
+
+        return {
+          produtoId: item.id, // ⚠️ TEM QUE SER ID DO PRODUTO
+          quantidade: item.quantidade,
+          precoUnitario: item.preco
+        };
+      });
+
+      const pedido = {
+        dataPedido: new Date().toISOString(),
+
+        nomeUsuario: usuario.nome,
+        telefoneUsuario: usuario.telefone,
+        emailUsuario: usuario.email,
+
+        endereco: {
+          rua: usuario.rua,
+          numero: usuario.numero,
+          bairro: usuario.bairro,
+          cidade: usuario.cidade,
+          cep: usuario.cep,
+          complemento: usuario.complemento,
+          estado: usuario.estado
+        },
+
+        formaPagamento: usuario.formaPagamento.toUpperCase(), // ⚠️ IMPORTANTE (ENUM)
+
+        observacao: "",
+
+        precoTotal: total,
+
+        itens: itens
+      };
+
+      const response = await fetch("http://localhost:8080/pedido/cadastrar", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(pedido)
+      });
+
+      if (!response.ok) {
+        throw new Error("Erro ao salvar pedido");
+      }
+
+      const data = await response.json();
+      console.log("Pedido salvo:", data);
+
+      return true;
+
+    } catch (error) {
+      console.error(error);
+      alert("Erro ao salvar pedido no sistema!");
+      return false;
+    }
   }
 
-  if (!usuario.formaPagamento) {
-    alert("Selecione a forma de pagamento!");
-    return;
-  }
+  
+  const enviarParaWhatsApp = async () => {
+    if (carrinho.length === 0) {
+      alert("Carrinho vazio!");
+      return;
+    }
 
-  const numeroWhatsApp = import.meta.env.VITE_WHATSAPP_NUMBER;
+    if (!usuario.nome || usuario.nome.trim() === "") {
+      alert("Preencha o nome!");
+      return;
+    }
 
-  let mensagem = `🛒 *Novo Pedido*\n\n`;
+    if (!usuario.email || usuario.email.trim() === "") {
+      alert("Preencha o email!");
+      return;
+    }
 
-  mensagem += `👤 *Cliente:* ${usuario.nome}\n`;
-  mensagem += `📧 *Email:* ${usuario.email}\n`;
-  mensagem += `📞 *Telefone:* ${usuario.telefone}\n\n`;
+    if (!usuario.telefone || usuario.telefone.trim() === "") {
+      alert("Preencha o telefone!");
+      return;
+    }
 
-  mensagem += `📍 *Endereço:*\n`;
-  mensagem += `${usuario.rua}, ${usuario.numero}\n`;
-  mensagem += `${usuario.bairro} - ${usuario.cidade}/${usuario.estado}\n`;
-  mensagem += `CEP: ${usuario.cep}\n`;
-  mensagem += `Complemento: ${usuario.complemento}\n\n`;
+    if (!usuario.rua || usuario.rua.trim() === "") {
+      alert("Preencha a rua!");
+      return;
+    }
 
-  mensagem += `💳 *Forma de Pagamento:* ${usuario.formaPagamento}\n\n`;
+    if (!usuario.numero || usuario.numero.trim() === "") {
+      alert("Preencha o número!");
+      return;
+    }
 
-  mensagem += `📦 *Itens do Pedido:*\n`;
+    if (!usuario.bairro || usuario.bairro.trim() === "") {
+      alert("Preencha o bairro!");
+      return;
+    }
 
-  let total = 0;
+    if (!usuario.cidade || usuario.cidade.trim() === "") {
+      alert("Preencha a cidade!");
+      return;
+    }
 
-  carrinho.forEach(item => {
-    const subtotal = item.preco * item.quantidade;
-    total += subtotal;
+    if (!usuario.estado || usuario.estado.trim() === "") {
+      alert("Preencha o estado!");
+      return;
+    }
 
-    mensagem += `- ${item.produto} (x${item.quantidade}) - R$ ${subtotal.toFixed(2)}\n`;
-  });
+    if (!usuario.cep || usuario.cep.trim() === "") {
+      alert("Preencha o CEP!");
+      return;
+    }
 
-  mensagem += `\n💰 *Total:* R$ ${total.toFixed(2)}`;
+    if (!usuario.formaPagamento) {
+      alert("Selecione a forma de pagamento!");
+      return;
+    }
+
+    // ✅ SALVA PRIMEIRO
+    const salvou = await salvarPedidoBackend();
+
+    if (!salvou) return;
+
+    const numeroWhatsApp = import.meta.env.VITE_WHATSAPP_NUMBER;
+
+    let mensagem = `🛒 *Novo Pedido*\n\n`;
+
+    mensagem += `👤 *Cliente:* ${usuario.nome}\n`;
+    mensagem += `📧 *Email:* ${usuario.email}\n`;
+    mensagem += `📞 *Telefone:* ${usuario.telefone}\n\n`;
+
+    mensagem += `📍 *Endereço:*\n`;
+    mensagem += `${usuario.rua}, ${usuario.numero}\n`;
+    mensagem += `${usuario.bairro} - ${usuario.cidade}/${usuario.estado}\n`;
+    mensagem += `CEP: ${usuario.cep}\n`;
+    mensagem += `Complemento: ${usuario.complemento}\n\n`;
+
+    mensagem += `💳 *Forma de Pagamento:* ${usuario.formaPagamento}\n\n`;
+
+    mensagem += `📦 *Itens do Pedido:*\n`;
+
+    let total = 0;
+
+    carrinho.forEach(item => {
+      const subtotal = item.preco * item.quantidade;
+      total += subtotal;
+
+      mensagem += `- ${item.produto} (x${item.quantidade}) - R$ ${subtotal.toFixed(2)}\n`;
+    });
+
+    mensagem += `\n💰 *Total:* R$ ${total.toFixed(2)}`;
 
     const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensagem)}`;
 
