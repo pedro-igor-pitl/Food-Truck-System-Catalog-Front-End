@@ -15,19 +15,20 @@ export default function VerificarUsuario() {
   const [valor, setValor] = useState("");
   const [erro, setErro] = useState("");
 
-const handleVerificar = async () => {
-  if (!valor.trim()) {
-    setErro("Digite um email ou telefone.");
-    return;
-  }
+  const handleVerificar = async () => {
+    if (!valor.trim()) {
+      setErro("Digite um email ou telefone.");
+      return;
+    }
 
-  const usuario = await verificarUsuario(valor);
+    const usuario = await verificarUsuario(valor);
 
-  if (usuario) {
     localStorage.removeItem("emailUsuario");
     localStorage.removeItem("usuario");
 
-    localStorage.setItem("usuario", JSON.stringify(usuario));
+    if (usuario) {
+      localStorage.setItem("usuario", JSON.stringify(usuario));
+    }
 
     navigate("/RealizarPedido", {
       state: {
@@ -35,10 +36,7 @@ const handleVerificar = async () => {
         email: valor
       }
     });
-  } else {
-    navigate("/RealizarPedido", { state: usuario });
-  }
-};
+  };
 
   return (
     <VerificarContainer>
