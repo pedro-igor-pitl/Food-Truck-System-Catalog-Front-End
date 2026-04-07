@@ -140,6 +140,20 @@ export default function App() {
     );
   };
 
+  const enviarParaWhatsApp = async () => {
+    const numeroWhatsApp = import.meta.env.VITE_WHATSAPP_NUMBER;
+
+    let mensagem = `Olá! 👋
+
+  Gostaria de entrar em contato para obter mais informações sobre o cardápio. 🍔🍟
+
+  Poderia me ajudar? 😊`;
+
+    const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensagem)}`;
+
+    window.open(url, "_blank");
+  };
+
   return (
     <Container>
       <Hero>
@@ -207,7 +221,7 @@ export default function App() {
             <p>(85) 99999-0000</p>
           </div>
         </FooterInfo>
-        <ContactButton>Falar no WhatsApp</ContactButton>
+        <ContactButton onClick={enviarParaWhatsApp}>Falar no WhatsApp</ContactButton>
         <Copy>© 2024 Food Truck Delicias - Todos os direitos reservados.</Copy>
       </Footer>
 
