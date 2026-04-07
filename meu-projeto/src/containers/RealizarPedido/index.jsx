@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { GETUsuarioPorEmailRetorno } from "../../services/GETInfoUsuariosCompleto.js";
-import { useNavigate } from "react-router-dom";
+import { buscarCarrinho } from "../../services/carrinhoService";
 
 import {
   Main,
@@ -18,13 +18,14 @@ import {
   PrecoProduto,
   DivProdutoCarrinho,
   DivPaiProdutosCarrinho,
+  FullWidth,
+  Field,
 } from "./styles.js";
-
-import { buscarCarrinho } from "../../services/carrinhoService";
 
 export default function RevisarPedido() {
   const location = useLocation();
   const navigate = useNavigate();
+
   const usuarioRecebido = location.state?.usuario;
   const emailDigitado = location.state?.email || "";
 
@@ -49,25 +50,18 @@ export default function RevisarPedido() {
     carregarCarrinho();
   }, []);
 
-  useEffect( () => {
+  useEffect(() => {
     async function fetchUsuarios() {
       try {
         const data = await GETUsuarioPorEmailRetorno(usuario.email);
 
-        const usuariosNormalizados = data.map((u) => ({
-          ...u,
-          ativo: u.ativo === "Sim"
-        }));
-
-        const usuarioEncontrado = usuariosNormalizados[0];
+        const usuarioEncontrado = data?.[0];
 
         if (usuarioEncontrado) {
           setUsuario(usuarioEncontrado);
         }
-
-        console.log("Usuario retornado: ", data);
       } catch (error) {
-        console.error("Erro ao buscar usuarios:", error);
+        console.error("Erro ao buscar usuários:", error);
       }
     }
 
@@ -89,14 +83,14 @@ export default function RevisarPedido() {
     try {
       let total = 0;
 
-      const itens = carrinho.map(item => {
+      const itens = carrinho.map((item) => {
         const subtotal = item.preco * item.quantidade;
         total += subtotal;
 
         return {
-          produtoId: item.id, // ⚠️ TEM QUE SER ID DO PRODUTO
+          produtoId: item.id,
           quantidade: item.quantidade,
-          precoUnitario: item.preco
+          precoUnitario: item.preco,
         };
       });
 
@@ -114,38 +108,30 @@ export default function RevisarPedido() {
           cidade: usuario.cidade,
           cep: usuario.cep.replace(/\D/g, ""),
           complemento: usuario.complemento,
-          estado: usuario.estado
+          estado: usuario.estado,
         },
 
-        formaPagamento: usuario.formaPagamento.toUpperCase(), // ⚠️ IMPORTANTE (ENUM)
+        formaPagamento: usuario.formaPagamento?.toUpperCase(),
 
         observacao: "",
-
         precoTotal: total,
-
-        itens: itens
+        itens: itens,
       };
 
       const response = await fetch("http://localhost:8080/pedido/cadastrar", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(pedido)
+        body: JSON.stringify(pedido),
       });
 
-      if (!response.ok) {
-        throw new Error("Erro ao salvar pedido");
-      }
-
-      const data = await response.json();
-      console.log("Pedido salvo:", data);
+      if (!response.ok) throw new Error();
 
       return true;
-
     } catch (error) {
       console.error(error);
-      alert("Erro ao salvar pedido no sistema!");
+      alert("Erro ao salvar pedido!");
       return false;
     }
   }
@@ -156,7 +142,10 @@ export default function RevisarPedido() {
 
       if (cepLimpo.length !== 8) return;
 
-      const response = await fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`);
+      const response = await fetch(
+        `https://viacep.com.br/ws/${cepLimpo}/json/`
+      );
+
       const data = await response.json();
 
       if (data.erro) {
@@ -169,76 +158,18 @@ export default function RevisarPedido() {
         rua: data.logradouro || "",
         bairro: data.bairro || "",
         cidade: data.localidade || "",
-        estado: data.uf || "" // ✅ aqui resolve teu problema do VARCHAR(2)
+        estado: data.uf || "",
       }));
-
     } catch (error) {
       console.error("Erro ao buscar CEP:", error);
     }
   }
-  
+
   const enviarParaWhatsApp = async () => {
-    if (carrinho.length === 0) {
-      alert("Carrinho vazio!");
-      return;
-    }
+    if (carrinho.length === 0) return alert("Carrinho vazio!");
 
-    if (!usuario.nome || usuario.nome.trim() === "") {
-      alert("Preencha o nome!");
-      return;
-    }
-
-    if (!usuario.email || usuario.email.trim() === "") {
-      alert("Preencha o email!");
-      return;
-    }
-
-    if (!usuario.telefone || usuario.telefone.trim() === "") {
-      alert("Preencha o telefone!");
-      return;
-    }
-
-    if (!usuario.rua || usuario.rua.trim() === "") {
-      alert("Preencha a rua!");
-      return;
-    }
-
-    if (!usuario.numero || usuario.numero.trim() === "") {
-      alert("Preencha o número!");
-      return;
-    }
-
-    if (!usuario.bairro || usuario.bairro.trim() === "") {
-      alert("Preencha o bairro!");
-      return;
-    }
-
-    if (!usuario.cidade || usuario.cidade.trim() === "") {
-      alert("Preencha a cidade!");
-      return;
-    }
-
-    if (!usuario.estado || usuario.estado.trim() === "") {
-      alert("Preencha o estado!");
-      return;
-    }
-
-    if (!usuario.cep || usuario.cep.trim() === "") {
-      alert("Preencha o CEP!");
-      return;
-    }
-
-    if (!usuario.formaPagamento) {
-      alert("Selecione a forma de pagamento!");
-      return;
-    }
-
-    // ✅ SALVA PRIMEIRO
     const salvou = await salvarPedidoBackend();
-
     if (!salvou) return;
-
-    const numeroWhatsApp = import.meta.env.VITE_WHATSAPP_NUMBER;
 
     let mensagem = `🛒 *Novo Pedido*\n\n`;
 
@@ -249,34 +180,35 @@ export default function RevisarPedido() {
     mensagem += `📍 *Endereço:*\n`;
     mensagem += `${usuario.rua}, ${usuario.numero}\n`;
     mensagem += `${usuario.bairro} - ${usuario.cidade}/${usuario.estado}\n`;
-    mensagem += `CEP: ${usuario.cep}\n`;
-    mensagem += `Complemento: ${usuario.complemento}\n\n`;
+    mensagem += `CEP: ${usuario.cep}\n\n`;
 
-    mensagem += `💳 *Forma de Pagamento:* ${usuario.formaPagamento}\n\n`;
+    mensagem += `💳 *Pagamento:* ${usuario.formaPagamento}\n\n`;
 
-    mensagem += `📦 *Itens do Pedido:*\n`;
+    mensagem += `📦 *Itens:*\n`;
 
     let total = 0;
 
-    carrinho.forEach(item => {
+    carrinho.forEach((item) => {
       const subtotal = item.preco * item.quantidade;
       total += subtotal;
 
-      mensagem += `- ${item.produto} (x${item.quantidade}) - R$ ${subtotal.toFixed(2)}\n`;
+      mensagem += `- ${item.produto} (x${item.quantidade}) - R$ ${subtotal.toFixed(
+        2
+      )}\n`;
     });
 
     mensagem += `\n💰 *Total:* R$ ${total.toFixed(2)}`;
 
-    const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensagem)}`;
+    const url = `https://wa.me/${
+      import.meta.env.VITE_WHATSAPP_NUMBER
+    }?text=${encodeURIComponent(mensagem)}`;
 
     window.open(url, "_blank");
 
     localStorage.removeItem("carrinho");
     setCarrinho([]);
 
-    setTimeout(() => {
-      navigate("/");
-    }, 1000);
+    setTimeout(() => navigate("/"), 1000);
   };
 
   return (
@@ -290,134 +222,154 @@ export default function RevisarPedido() {
         {loading ? (
           <p>Carregando...</p>
         ) : (
-          <Form>
+          <>
+            {/* 🔹 FORMULÁRIO */}
+            <Form>
+              <Field>
+                <Label>Nome *</Label>
+                <Input
+                  value={usuario.nome || ""}
+                  onChange={(e) =>
+                    setUsuario({ ...usuario, nome: e.target.value })
+                  }
+                />
+              </Field>
 
-            <Label>Nome *</Label>
-            <Input
-              value={usuario.nome || ""}
-              onChange={(e) =>
-                setUsuario({ ...usuario, nome: e.target.value })
-              }
-            />
+              <Field>
+                <Label>Email *</Label>
+                <Input
+                  value={usuario.email || ""}
+                  onChange={(e) =>
+                    setUsuario({ ...usuario, email: e.target.value })
+                  }
+                />
+              </Field>
 
-            <Label>Email *</Label>
-            <Input
-              type="email"
-              value={usuario.email || ""}
-              onChange={(e) =>
-                setUsuario({ ...usuario, email: e.target.value })
-              }
-            />
+              <Field>
+                <Label>Telefone *</Label>
+                <Input
+                  value={usuario.telefone || ""}
+                  onChange={(e) =>
+                    setUsuario({ ...usuario, telefone: e.target.value })
+                  }
+                />
+              </Field>
 
-            <Label>Telefone *</Label>
-            <Input
-              value={usuario.telefone || ""}
-              onChange={(e) =>
-                setUsuario({ ...usuario, telefone: e.target.value })
-              }
-            />
+              <Field>
+                <Label>CEP *</Label>
+                <Input
+                  value={usuario.cep || ""}
+                  onChange={(e) => {
+                    const cep = e.target.value;
 
-            <Label>Cep *</Label>
-            <Input
-              value={usuario.cep || ""}
-              onChange={(e) => {
-                const cep = e.target.value;
+                    setUsuario({ ...usuario, cep });
 
-                setUsuario({ ...usuario, cep });
+                    if (cep.length >= 8) buscarEnderecoPorCEP(cep);
+                  }}
+                />
+              </Field>
 
-                if (cep.length === 8 || cep.length === 9) {
-                  buscarEnderecoPorCEP(cep);
-                }
-              }}
-            />
+              <Field>
+                <Label>Bairro *</Label>
+                <Input
+                  value={usuario.bairro || ""}
+                  onChange={(e) =>
+                    setUsuario({ ...usuario, bairro: e.target.value })
+                  }
+                />
+              </Field>
 
-            <Label>Bairro *</Label>
-            <Input
-              value={usuario.bairro || ""}
-              onChange={(e) =>
-                setUsuario({ ...usuario, bairro: e.target.value })
-              }
-            />
+              <Field>
+                <Label>Cidade *</Label>
+                <Input
+                  value={usuario.cidade || ""}
+                  onChange={(e) =>
+                    setUsuario({ ...usuario, cidade: e.target.value })
+                  }
+                />
+              </Field>
 
-            <Label>Cidade *</Label>
-            <Input
-              value={usuario.cidade || ""}
-              onChange={(e) =>
-                setUsuario({ ...usuario, cidade: e.target.value })
-              }
-            />
+              <Field>
+                <Label>Estado *</Label>
+                <Input
+                  value={usuario.estado || ""}
+                  onChange={(e) =>
+                    setUsuario({ ...usuario, estado: e.target.value })
+                  }
+                />
+              </Field>
 
-            <Label>Complemento *</Label>
-            <Input
-              value={usuario.complemento || ""}
-              onChange={(e) =>
-                setUsuario({ ...usuario, complemento: e.target.value })
-              }
-            />
+              <Field>
+                <Label>Rua *</Label>
+                <Input
+                  value={usuario.rua || ""}
+                  onChange={(e) =>
+                    setUsuario({ ...usuario, rua: e.target.value })
+                  }
+                />
+              </Field>
 
-            <Label>Numero *</Label>
-            <Input
-              value={usuario.numero || ""}
-              onChange={(e) =>
-                setUsuario({ ...usuario, numero: e.target.value })
-              }
-            />
+              <Field>
+                <Label>Número *</Label>
+                <Input
+                  value={usuario.numero || ""}
+                  onChange={(e) =>
+                    setUsuario({ ...usuario, numero: e.target.value })
+                  }
+                />
+              </Field>
+                  
+                <Label>Complemento *</Label>
+                <Input
+                  value={usuario.complemento || ""}
+                  onChange={(e) =>
+                    setUsuario({ ...usuario, complemento: e.target.value })
+                  }
+                />
+                <Field>
+                <Label>Forma de Pagamento *</Label>
+                <select
+                  value={usuario.formaPagamento || ""}
+                  onChange={(e) =>
+                    setUsuario({
+                      ...usuario,
+                      formaPagamento: e.target.value,
+                    })
+                  }
+                >
+                  <option value="">Selecione</option>
+                  <option value="CARTAO_CREDITO">Cartão Crédito</option>
+                  <option value="CARTAO_DEBITO">Cartão Débito</option>
+                  <option value="PIX">Pix</option>
+                  <option value="DINHEIRO">Dinheiro</option>
+                </select>
+                </Field>
+            </Form>
+                    
+            {/* 🔹 CARRINHO FORA DO GRID */}
+            <div style={{ marginTop: "25px" }}>
+              <Label>Itens do Carrinho</Label>
+                <hr />
+              <DivPaiProdutosCarrinho>
+                {carrinho.map((item) => (
+                  <DivProdutoCarrinho key={item.id}>
+                    <NomeProduto>{item.produto}</NomeProduto>
+                    <QuantidadeProduto>
+                      Quantidade: {item.quantidade}
+                    </QuantidadeProduto>
+                    <PrecoProduto>R$ {item.preco}</PrecoProduto>
+                  </DivProdutoCarrinho>
+                ))}
+              </DivPaiProdutosCarrinho>
+              <hr />
+            </div>
 
-
-            <Label>Rua *</Label>
-            <Input
-              value={usuario.rua || ""}
-              onChange={(e) =>
-                setUsuario({ ...usuario, rua: e.target.value })
-              }
-            />
-
-            <Label>Estado *</Label>
-            <Input
-              value={usuario.estado || ""}
-              onChange={(e) =>
-                setUsuario({ ...usuario, estado: e.target.value })
-              }
-            />
-
-            <Label>Forma de Pagamento *</Label>
-            <select
-              value={usuario.formaPagamento || ""}
-              onChange={(e) =>
-                setUsuario({ ...usuario, formaPagamento: e.target.value })
-              }
-              style={{
-                padding: "10px",
-                borderRadius: "6px",
-                border: "1px solid #ccc",
-                marginBottom: "10px"
-              }}
-            >
-              <option value="">Selecione</option>
-              <option value="CARTAO_CREDITO">Cartão de Crédito</option>
-              <option value="CARTAO_DEBITO">Cartão de Débito</option>
-              <option value="PIX">Pix</option>
-              <option value="DINHEIRO">Dinheiro</option>
-            </select>
-
-            <Label>Itens do Carrinho</Label>
-            <DivPaiProdutosCarrinho>
-              <hr/>
-              {carrinho.map((item) => (
-                <DivProdutoCarrinho key={item.id}>
-                  <NomeProduto>{item.produto}</NomeProduto>
-                  <QuantidadeProduto>Quantidade: {item.quantidade}</QuantidadeProduto>
-                  <PrecoProduto>Preço: R$ {item.preco}</PrecoProduto>
-                  <hr />
-                </DivProdutoCarrinho>
-              ))}
-            </DivPaiProdutosCarrinho>
-
-            <Button type="button" onClick={enviarParaWhatsApp}>
-              Finalizar Pedido
-            </Button>
-
-          </Form>
+            <FullWidth>
+              <Button onClick={enviarParaWhatsApp}>
+                Finalizar Pedido
+              </Button>
+            </FullWidth>
+          </>
         )}
       </Container>
     </Main>

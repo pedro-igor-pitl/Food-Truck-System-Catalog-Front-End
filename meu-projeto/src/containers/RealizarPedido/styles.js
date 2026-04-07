@@ -1,5 +1,10 @@
 import styled from "styled-components";
 
+export const Field = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
 export const Main = styled.main`
   position: fixed; /* ocupa a tela inteira */
   top: 0;
@@ -24,7 +29,6 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  margin-top: 35%;
 `;
 
 export const Header = styled.div`
@@ -59,9 +63,22 @@ export const Subtitle = styled.p`
 `;
 
 export const Form = styled.form`
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr;
   gap: 16px;
+
+  /* Desktop */
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+`;
+
+export const FullWidth = styled.div`
+  grid-column: span 3;
+
+  @media (max-width: 767px) {
+    grid-column: span 1;
+  }
 `;
 
 export const Label = styled.label`
@@ -82,6 +99,7 @@ export const Input = styled.input`
   border: 1px solid #d1d5db;
   border-radius: 6px;
   font-size: 14px;
+  padding: 3%;
   background: linear-gradient(135deg, #f4ceb4ff, #fcefb9ff);
   color: #000000ff;
   cursor: ${({ type }) => (type === "checkbox" ? "pointer" : "text")};
