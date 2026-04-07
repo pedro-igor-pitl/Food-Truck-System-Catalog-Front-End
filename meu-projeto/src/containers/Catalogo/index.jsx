@@ -1,3 +1,5 @@
+const BASE_URL = "http://localhost:8080";
+
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { listaProdutosCatalogo } from "../../services/ListaProdutoCatalogo.js";
@@ -167,7 +169,10 @@ export default function App() {
             <CardGrid>
                 {categorias[categoria].map((item) => (
                   <Card key={`${categoria}-${item.id}`}>
-                  <CardImage src={item.imagemUrl} />
+                  <CardImage 
+                    src={`${BASE_URL}${item.imagemUrl}`} 
+                    alt={item.nome} 
+                  />
                   <h4>{item.produto}</h4>
                   <p>{item.descricao}</p>
                   <PriceRow>

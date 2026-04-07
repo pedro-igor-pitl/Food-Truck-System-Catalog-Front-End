@@ -1,3 +1,5 @@
+const BASE_URL = "http://localhost:8080";
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaEdit, FaSync } from "react-icons/fa";
@@ -207,7 +209,11 @@ export default function ListaProdutos() {
                   key={index}
                   ativo={produto.ativo ? "ativo" : "inativo"}
                 >
-                  <BodyCatalogImg src={produto.imagemUrl} alt={produto.nome} />
+
+                  <BodyCatalogImg 
+                    src={`${BASE_URL}${produto.imagemUrl}`} 
+                    alt={produto.nome} 
+                  />
                   <BodyCatalogName>{produto.nome}</BodyCatalogName>
                   <BodyCatalogDescProduto>{produto.descricao}</BodyCatalogDescProduto>
                   <DivPaiPriceName>
