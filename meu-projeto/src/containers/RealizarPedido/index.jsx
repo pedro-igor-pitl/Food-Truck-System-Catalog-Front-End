@@ -112,7 +112,7 @@ export default function RevisarPedido() {
           numero: usuario.numero,
           bairro: usuario.bairro,
           cidade: usuario.cidade,
-          cep: usuario.cep,
+          cep: usuario.cep.replace(/\D/g, ""),
           complemento: usuario.complemento,
           estado: usuario.estado
         },
@@ -150,6 +150,32 @@ export default function RevisarPedido() {
     }
   }
 
+  async function buscarEnderecoPorCEP(cep) {
+    try {
+      const cepLimpo = cep.replace(/\D/g, "");
+
+      if (cepLimpo.length !== 8) return;
+
+      const response = await fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`);
+      const data = await response.json();
+
+      if (data.erro) {
+        alert("CEP não encontrado!");
+        return;
+      }
+
+      setUsuario((prev) => ({
+        ...prev,
+        rua: data.logradouro || "",
+        bairro: data.bairro || "",
+        cidade: data.localidade || "",
+        estado: data.uf || "" // ✅ aqui resolve teu problema do VARCHAR(2)
+      }));
+
+    } catch (error) {
+      console.error("Erro ao buscar CEP:", error);
+    }
+  }
   
   const enviarParaWhatsApp = async () => {
     if (carrinho.length === 0) {
@@ -294,9 +320,15 @@ export default function RevisarPedido() {
             <Label>Cep *</Label>
             <Input
               value={usuario.cep || ""}
-              onChange={(e) =>
-                setUsuario({ ...usuario, cep: e.target.value })
-              }
+              onChange={(e) => {
+                const cep = e.target.value;
+
+                setUsuario({ ...usuario, cep });
+
+                if (cep.length === 8 || cep.length === 9) {
+                  buscarEnderecoPorCEP(cep);
+                }
+              }}
             />
 
             <Label>Bairro *</Label>
