@@ -72,6 +72,10 @@ export default function DashBoardAdmin() {
     navigate("/dashboard/produto/novo");
   };
 
+  const handleDashBoardPedido = () => {
+    navigate("/dashboard/pedido");
+  };
+
   const handleCatalog = () => {
     navigate("/");
   }
@@ -163,7 +167,7 @@ export default function DashBoardAdmin() {
           <ActionTitle>Gerenciar Pedidos</ActionTitle>
           <ActionDesc>Visualize os pedidos do seu negocio</ActionDesc>
           <ActionButtons>
-            <ActionButtonPrimary>Ver Pedidos</ActionButtonPrimary>
+            <ActionButtonPrimary onClick={handleDashBoardPedido}>Ver Pedidos</ActionButtonPrimary>
           </ActionButtons>
         </ActionCard>
       </ActionsGrid>
