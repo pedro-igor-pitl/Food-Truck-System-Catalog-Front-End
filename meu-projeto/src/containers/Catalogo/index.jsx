@@ -89,11 +89,13 @@ export default function App() {
     }
   }, []);
 
-  const categorias = produtos.reduce((acc, item) => {
-    if (!acc[item.categoria]) acc[item.categoria] = [];
-    acc[item.categoria].push(item);
-    return acc;
-  }, {});
+  const categorias = produtos
+    .filter(item => item.ativo === true) // 🔥 FILTRO AQUI
+    .reduce((acc, item) => {
+      if (!acc[item.categoria]) acc[item.categoria] = [];
+      acc[item.categoria].push(item);
+      return acc;
+    }, {});
 
   const cartCategorias = cart.reduce((acc, item) => {
     if (!acc[item.categoria]) acc[item.categoria] = [];
@@ -168,6 +170,7 @@ export default function App() {
             <h3>{categoria}</h3>
             <CardGrid>
                 {categorias[categoria].map((item) => (
+                  
                   <Card key={`${categoria}-${item.id}`}>
                   <CardImage 
                     src={`${BASE_URL}${item.imagemUrl}`} 

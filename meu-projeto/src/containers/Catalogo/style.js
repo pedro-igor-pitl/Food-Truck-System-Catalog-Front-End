@@ -95,6 +95,8 @@ export const Card = styled.div`
 
 export const CardImage = styled.img`
   width: 100%;
+  height: 180px;        // 🔥 altura fixa
+  object-fit: cover;    // 🔥 corta sem distorcer
   border-radius: 10px;
 `;
 
