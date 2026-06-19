@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Lock, Mail } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { login } from "../../services/LoginApi.js"; 
+import { login } from "../../services/LoginApi.js";
+
 import {
   Container,
   Card,
@@ -19,6 +20,7 @@ export default function AdminLogin() {
   const [senha, setSenha] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -28,7 +30,17 @@ export default function AdminLogin() {
 
     try {
       const token = await login(email, senha);
-      if (token) localStorage.setItem("adminToken", token);
+
+      if (!token) {
+        throw new Error("Token não recebido");
+      }
+
+      // 🔥 PADRÃO ÚNICO DO SISTEMA
+      localStorage.setItem("token", token);
+
+      // opcional: marca login
+      localStorage.setItem("isAdminLogged", "true");
+
       navigate("/dashboard");
     } catch (err) {
       setError(err.message || "Erro ao fazer login");
@@ -43,6 +55,7 @@ export default function AdminLogin() {
         <IconWrapper>
           <Lock size={24} color="white" />
         </IconWrapper>
+
         <Title>Acesso Administrativo</Title>
         <Subtitle>Entre com suas credenciais de administrador</Subtitle>
 
@@ -69,7 +82,11 @@ export default function AdminLogin() {
             />
           </InputGroup>
 
-          {error && <p style={{ color: "red", textAlign: "center" }}>{error}</p>}
+          {error && (
+            <p style={{ color: "red", textAlign: "center" }}>
+              {error}
+            </p>
+          )}
 
           <Button type="submit" disabled={loading}>
             {loading ? "Entrando..." : "Entrar"}

@@ -1,20 +1,23 @@
-
 export async function fetchTotalizadores(token) {
   try {
-    const response = await fetch(`http://localhost:8080/admin/totalizadores`, {
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": token ? `Bearer ${token}` : undefined,
-      },
+    const headers = {
+      "Content-Type": "application/json",
+    };
+
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
+    const response = await fetch("http://localhost:8080/admin/totalizadores", {
+      method: "GET",
+      headers,
     });
 
     if (!response.ok) {
       throw new Error("Erro ao buscar totalizadores");
     }
 
-    // Garante que vai ler o JSON corretamente
-    const data = await response.json();
-    return data;
+    return await response.json();
   } catch (err) {
     console.error("Erro ao buscar totalizadores:", err);
     return {
@@ -22,6 +25,6 @@ export async function fetchTotalizadores(token) {
       totalCategorias: 0,
       totalClientes: 0,
       totalPedidos: 0,
-    }; // fallback
+    };
   }
 }

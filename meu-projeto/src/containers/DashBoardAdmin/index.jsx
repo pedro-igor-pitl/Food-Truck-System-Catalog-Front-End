@@ -50,7 +50,7 @@ export default function DashBoardAdmin() {
     navigate("/categoria");
   }
   useEffect(() => {
-    const token = localStorage.getItem("adminToken");
+    const token = localStorage.getItem("token");
     fetchTotalizadores(token)
       .then((data) => setStats(data))
       .catch((err) => console.error("Erro ao carregar dados:", err));
