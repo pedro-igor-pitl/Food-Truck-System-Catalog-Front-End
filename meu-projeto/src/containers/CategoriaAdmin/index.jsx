@@ -49,16 +49,52 @@ export default function ListaCategoriaAdmin() {
   useEffect(() => {
     async function fetchCategorias() {
       try {
-        const response = await fetch("http://localhost:8080/categoria/lista");
+        const token = localStorage.getItem("token");
+
+        console.log("TOKEN CATEGORIA:", token);
+
+        if (!token) {
+          console.log("Usuário não logado");
+          navigate("/");
+          return;
+        }
+
+        const response = await fetch(
+          "http://localhost:8080/categoria/lista",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json"
+            }
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`Erro HTTP: ${response.status}`);
+        }
+
         const data = await response.json();
+
         console.log("Categorias carregadas:", data);
+
         setCategorias(data);
+
       } catch (error) {
         console.error("Erro ao carregar categorias:", error);
+
+        if (
+          error.message.includes("401") ||
+          error.message.includes("403")
+        ) {
+          localStorage.removeItem("adminToken");
+          localStorage.removeItem("adminName");
+          navigate("/");
+        }
       }
     }
+
     fetchCategorias();
-  }, []);
+  }, [navigate]);
 
 const handleAlterarStatusCategoria = async (id, ativo) => {
   console.log("Tentando alterar status da categoria com ID:", id);
