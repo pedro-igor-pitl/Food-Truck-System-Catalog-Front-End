@@ -1,13 +1,29 @@
 export default async function listaCategoriaAdmin() {
   try {
-    const response = await fetch("http://localhost:8080/categoria/lista");
+
+    const token = localStorage.getItem("token");
+
+    console.log("TOKEN CATEGORIA:", token);
+
+    const response = await fetch(
+      "http://localhost:8080/categoria/lista",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
     if (!response.ok) {
-      throw new Error("Erro ao buscar categorias");
+      throw new Error(`Erro ao buscar categorias (${response.status})`);
     }
+
     const data = await response.json();
-    return data;  // retorna o array de categorias
+
+    return data;
+
   } catch (error) {
     console.error("Erro ao carregar categorias:", error);
-    return []; // retorna array vazio em caso de erro
+    return [];
   }
 }
