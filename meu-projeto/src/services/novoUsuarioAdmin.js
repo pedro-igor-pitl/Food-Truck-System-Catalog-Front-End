@@ -10,6 +10,9 @@ export async function createUsuario({
   endereco
 }) {
   try {
+
+    const token = localStorage.getItem("token");
+
     const response = await axios.post(
       "http://localhost:8080/usuario/cadastrar",
       {
@@ -20,26 +23,31 @@ export async function createUsuario({
         telefone,
         tipo,
         endereco: {
-          rua:          endereco.rua,
-          numero:       endereco.numero,
-          bairro:       endereco.bairro,
-          cidade:       endereco.cidade,
-          estado:       endereco.estado,
-          cep:          endereco.cep,
-          complemento:  endereco.complemento || ""
+          rua: endereco.rua,
+          numero: endereco.numero,
+          bairro: endereco.bairro,
+          cidade: endereco.cidade,
+          estado: endereco.estado,
+          cep: endereco.cep,
+          complemento: endereco.complemento || ""
         }
       },
       {
         headers: {
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json"
         }
       }
     );
-    
-    return response.data; // retorna o usuário criado
-    
+
+    return response.data;
+
   } catch (error) {
-    console.error("Erro no createUsuario:", error.response || error.message);
+    console.error(
+      "Erro no createUsuario:",
+      error.response?.data || error.message
+    );
+
     throw error;
   }
 }
