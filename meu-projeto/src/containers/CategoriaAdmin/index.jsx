@@ -281,7 +281,7 @@ const handleSaveCategoryName = async () => {
         <ModalOverlay>
           
           <ModalContent>
-            <ModalLabel htmlFor="categoria">Nova Categoria:</ModalLabel>
+            <ModalLabel htmlFor="categoria">Editar Categoria:</ModalLabel>
             <label>
               Novo nome da categoria:
               <input
